@@ -6,8 +6,9 @@ DEFAULT_HPR = (180,0,0)
 
 DEFAULT_CAMERA_POS = (0,-20,4.2)
 
-SCREENSHOT_DIR = "screenshots"
-RESOURCES_DIR = "resources"
+SCREENSHOT_DIR = "../screenshots"
+RESOURCES_DIR = "../resources"
+CONFIG_DIR = "../VisorConfig.prc"
 
 SUIT_A_MODEL = os.path.join(RESOURCES_DIR,"phase_3.5","models","char","tt_a_ene_cga_zero.bam")
 SUIT_B_MODEL = os.path.join(RESOURCES_DIR,"phase_3.5","models","char","tt_a_ene_cgb_zero.bam")

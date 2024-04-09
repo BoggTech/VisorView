@@ -1,6 +1,3 @@
-from panda3d.core import loadPrcFile
-loadPrcFile("VisorConfig.prc")
-
 import os
 from datetime import datetime
 from panda3d.core import AntialiasAttrib, Loader
@@ -12,6 +9,9 @@ from direct.gui.DirectGui import *
 from direct.task import Task
 from direct.interval.IntervalGlobal import Func
 import globals
+
+from panda3d.core import loadPrcFile
+loadPrcFile(globals.CONFIG_DIR)
 
 resources = globals.RESOURCES_DIR
 if not os.path.exists(resources):
