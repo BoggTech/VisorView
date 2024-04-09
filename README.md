@@ -25,7 +25,7 @@ s             | Toggle Shadow. The drop-shadow below the cog will be toggled on/
 a             | View animation list. This list can be scrolled, and entries can be clicked to switch the active animation. **Some controls are disabled when this menu is open!**
 p             | Toggle Pose Mode. When pose mode is active, the cog's animation will pause, and the scrollwheel can be used to cycle through the animation's frames.
 b             | Toggle animation blending.
-r             | Reset the camera's roll. Roll is an axis of rotation.
+r             | Reset the camera's roll. Roll is an axis of rotation. Think of it like turning the camera clockwise from its POV.
 f9            | Take screenshot. This will be stored to the `screenshots` directory by default.
 Control+Z     | Reset to default camera position, positioning it directly in front of the cog.
 Mousewheel    | Can be used with the animations menu or pose mode. See **p** and **a** controls for instructions.
