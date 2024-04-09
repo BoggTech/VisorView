@@ -31,6 +31,7 @@ Control+Z     | Reset to default camera position, positioning it directly in fro
 Mousewheel    | Can be used with the animations menu or pose mode. See **p** and **a** controls for instructions.
 
 This program uses the default Panda3D camera controls. See the gif below for controlling the camera with your mouse.
+
 ![An animated gif of a Toontown Rewritten cog. The camera is being manipulated by the mouse movement, both rotationally and positionally.](assets/camera.gif)
 
 # FAQ
