@@ -6,9 +6,10 @@ DEFAULT_HPR = (180,0,0)
 
 DEFAULT_CAMERA_POS = (0,-20,4.2)
 
+
 SCREENSHOT_DIR = os.path.join("..", "screenshots")
-GIF_DIR = os.path.join("..", "gif")
-RESOURCES_DIR = os.path.join("..", "resources")
+GIF_DIR = os.path.join("..", "gifs")
+RESOURCES_DIR = "../resources"                  # i'm inclined to use os.path.join here but it breaks a lot
 CONFIG_DIR = os.path.join("..", "VisorConfig.prc")
 
 
