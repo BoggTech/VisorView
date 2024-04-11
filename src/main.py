@@ -65,17 +65,49 @@ class VisorView(ShowBase):
         self.reset_camera_pos()
 
         # we're initialized, time to accept input
+        self.enable_controls()
+
+    def enable_controls(self):
         self.accept("space", self.cycle)
         self.accept("s", self.toggle_shadow)
         self.accept("a", self.toggle_animation_scroll)
         self.accept("p", self.toggle_pose)
         self.accept("b", self.toggle_blend)
         self.accept("r", self.reset_camera_roll)
+        self.accept("f1", self.record_gif)
         self.accept("f9", self.take_screenshot)
         self.accept("control-z", self.reset_camera_pos)
         self.accept("wheel_up", self.scroll_up)
         self.accept("wheel_down", self.scroll_down)
-    
+
+    def disable_controls(self):
+        self.ignoreAll()
+
+    # slapping this in right now because bananas wants it
+    def record_gif(self):
+        path = globals.GIF_DIR
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        # disable everything until we're done
+        self.disable_controls()
+        aspect2d.hide()
+
+        # get framecount of current animation
+        num_frames = self.actor.getNumFrames(self.current_animation)
+        fps = self.actor.getFrameRate(self.current_animation)
+        duration = num_frames / fps
+
+        movie_task = self.base.movie(os.path.join(path, "cool_gif"), duration=duration, fps=fps, format="png", sd=4)
+
+        self.actor.play(self.current_animation)
+        taskMgr.add(movie_task, "movie_task", uponDeath=self.finish_record)
+
+    def finish_record(self):
+        # gif is done so let's wrap up
+        self.enable_controls()
+        aspect2d.show()
+
     def take_screenshot(self):
         path = globals.SCREENSHOT_DIR
         if not os.path.exists(path):
