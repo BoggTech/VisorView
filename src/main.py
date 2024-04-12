@@ -9,6 +9,7 @@ from direct.gui.DirectGui import *
 from direct.task import Task
 from direct.interval.IntervalGlobal import Func
 import globals
+import shutil
 
 from panda3d.core import loadPrcFile
 loadPrcFile(globals.CONFIG_DIR)
@@ -54,7 +55,7 @@ class VisorView(ShowBase):
         self.is_shadow = True
         self.is_posed = False
         self.is_blend = True
-        self.current_animation = "zero"
+        self.current_animation = None
         self.last_pose_frame = 0
         self.cog_list = list(globals.COG_DATA)
         self.current_cog_index = 0
@@ -74,7 +75,7 @@ class VisorView(ShowBase):
         self.accept("p", self.toggle_pose)
         self.accept("b", self.toggle_blend)
         self.accept("r", self.reset_camera_roll)
-        self.accept("f1", self.record_gif)
+        self.accept("f1", self.start_gif)
         self.accept("f9", self.take_screenshot)
         self.accept("control-z", self.reset_camera_pos)
         self.accept("wheel_up", self.scroll_up)
@@ -84,29 +85,68 @@ class VisorView(ShowBase):
         self.ignoreAll()
 
     # slapping this in right now because bananas wants it
-    def record_gif(self):
+    # this is VERY UNTESTED and VERY MESSY and most likely wont make it into the main branch!
+    # ----------------------------------------------------------------------- #
+    def pose_gif(self, frame):
+        self.actor.pose(self.current_animation, frame)
+
+        if self.current_animation_frames-1 == frame:
+            print("We done")
+            return True
+        else:
+            return False
+
+    def loop_gif(self, task):
+        result = self.pose_gif(self.gif_index)
+
+        path = globals.GIF_DIR
+        filepath = os.path.join(path, "{}.png".format(self.gif_index))
+        self.base.graphicsEngine.renderFrame()
+        self.base.screenshot(filepath, False)
+
+        print("Outputting: {}".format(filepath))
+
+        if (result):
+            return Task.done
+        else:
+            self.gif_index += 1
+            return Task.cont
+
+    def start_gif(self):
+        # should not be able to set to zero because it does nothing but lets not worry
+        # about that for now. will have to fix that TODO
+        if self.current_animation == None or self.current_animation == "zero":
+            return
+
+        # disable controls
+        self.disable_controls()
+        aspect2d.hide()
+
+        # if not posed, enter pose mode
+        # we'll exit it later 
+        if not self.is_posed:
+            self.toggle_pose()
+
+        # get info
+        self.current_animation_frames = self.actor.getNumFrames(self.current_animation)
+        
         path = globals.GIF_DIR
         if not os.path.exists(path):
             os.makedirs(path)
 
-        # disable everything until we're done
-        self.disable_controls()
-        aspect2d.hide()
+        self.gif_index = 0
+        if (os.path.isdir(path)):
+            shutil.rmtree(path)
+        os.mkdir(path)
+        self.taskMgr.add(self.loop_gif, "loop", uponDeath=self.finish_gif)
 
-        # get framecount of current animation
-        num_frames = self.actor.getNumFrames(self.current_animation)
-        fps = self.actor.getFrameRate(self.current_animation)
-        duration = num_frames / fps
-
-        movie_task = self.base.movie(os.path.join(path, "cool_gif"), duration=duration, fps=fps, format="png", sd=4)
-
-        self.actor.play(self.current_animation)
-        taskMgr.add(movie_task, "movie_task", uponDeath=self.finish_record)
-
-    def finish_record(self):
-        # gif is done so let's wrap up
+    def finish_gif(self, task):
+        # re-enable controls and ensure pose mode is back to normal
+        self.toggle_pose()
         self.enable_controls()
         aspect2d.show()
+    # ----------------------------------------------------------------------- #
+    # end messy hacky stuff
 
     def take_screenshot(self):
         path = globals.SCREENSHOT_DIR

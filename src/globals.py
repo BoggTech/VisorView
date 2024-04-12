@@ -7,6 +7,8 @@ DEFAULT_HPR = (180,0,0)
 DEFAULT_CAMERA_POS = (0,-20,4.2)
 
 
+# TODO: lots of weird stuff going on here in relation to directories. it might be best to put a main.py in the root directory of the
+# project and run it with -m and do everything like that. currently it is A Bit Silly to have all these ..s 
 SCREENSHOT_DIR = os.path.join("..", "screenshots")
 GIF_DIR = os.path.join("..", "gifs")
 RESOURCES_DIR = "../resources"                  # i'm inclined to use os.path.join here but it breaks a lot
