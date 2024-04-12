@@ -149,6 +149,7 @@ resources/phase_*
 
 # Screenshots
 screenshots/*
+gifs/*
 
 # PyCharm
 #  JetBrains specific template is maintainted in a separate JetBrains.gitignore that can
