@@ -3,11 +3,8 @@ from datetime import datetime
 from panda3d.core import AntialiasAttrib, Loader
 from panda3d.core import TextNode, Mat4
 from direct.showbase.ShowBase import ShowBase
-from direct.gui.OnscreenText import OnscreenText
 from direct.actor.Actor import Actor
 from direct.gui.DirectGui import *
-from direct.task import Task
-from direct.interval.IntervalGlobal import Func
 import globals
 
 from panda3d.core import loadPrcFile
@@ -52,6 +49,8 @@ class VisorView(ShowBase):
         self.actor = None
         self.available_animations = []
         self.is_shadow = True
+        self.is_head = True
+        self.is_body = True
         self.is_posed = False
         self.is_blend = True
         self.current_animation = "zero"
@@ -67,6 +66,8 @@ class VisorView(ShowBase):
         # we're initialized, time to accept input
         self.accept("space", self.cycle)
         self.accept("s", self.toggle_shadow)
+        self.accept("control-b", self.toggle_body)
+        self.accept("control-h", self.toggle_head)
         self.accept("a", self.toggle_animation_scroll)
         self.accept("p", self.toggle_pose)
         self.accept("b", self.toggle_blend)
@@ -228,6 +229,11 @@ class VisorView(ShowBase):
         self.actor.setPos(pos)
         self.actor.setHpr(hpr)
 
+        # match settings
+        self.toggle_head(False)
+        self.toggle_shadow(False)
+        self.toggle_body(False)
+
         self.actor.reparentTo(render)
         self.actor.setBlend(frameBlend=self.is_blend)
     
@@ -239,13 +245,43 @@ class VisorView(ShowBase):
         self.current_cog = self.cog_list[self.current_cog_index]
         self.build_cog()
 
-    # Function to toggle shadow hidden/unhidden
-    def toggle_shadow(self):
-        self.is_shadow = not self.is_shadow
+    # Function to toggle shadow hidden/unhidden, update_state exists if we want to make sure it's in the right state (i.e
+    # hidden when false rather than shown) instead of toggling it.
+    def toggle_shadow(self, update_state=True):
+        if update_state:
+            self.is_shadow = not self.is_shadow
+
         if self.is_shadow:
-            self.shadow.show()
+            self.shadow.show_through()
         else:
             self.shadow.hide()
+
+    # Hide/show head, update_state exists if we want to make sure it's in the right state (i.e
+    # hidden when false rather than shown) instead of toggling it.
+    def toggle_head(self, update_state=True):
+        if update_state:
+            self.is_head = not self.is_head
+
+        if self.is_head:
+            self.actor.find('**/def_head').show_through()
+        else:
+            self.actor.find('**/def_head').hide()
+
+    # Hide/show head, update_state exists if we want to make sure it's in the right state (i.e
+    # hidden when false rather than shown) instead of toggling it.
+    def toggle_body(self, update_state=True):
+        if update_state:
+            self.is_body = not self.is_body
+
+        if self.is_body:
+            self.actor.show_through()
+        else:
+            self.actor.hide()
+
+        # make sure the children are shown/hidden if they need to be
+        self.toggle_head(False)
+        self.toggle_shadow(False)
+
     
 app = VisorView()
 app.render.setAntialias(AntialiasAttrib.MMultisample)
