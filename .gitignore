@@ -148,8 +148,8 @@ cython_debug/
 resources/phase_*
 
 # Screenshots
-screenshots/*
-gifs/*
+screenshots
+gifs
 
 # PyCharm
 #  JetBrains specific template is maintainted in a separate JetBrains.gitignore that can

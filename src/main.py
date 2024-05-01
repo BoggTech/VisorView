@@ -4,6 +4,7 @@ from panda3d.core import AntialiasAttrib, Loader
 from panda3d.core import TextNode, Mat4
 from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
+from direct.task import Task
 from direct.gui.DirectGui import *
 import globals
 import shutil
