@@ -6,6 +6,7 @@ from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
 from direct.gui.DirectGui import *
 import globals
+from camera import Camera
 
 from panda3d.core import loadPrcFile
 loadPrcFile(globals.CONFIG_DIR)
@@ -20,6 +21,8 @@ class VisorView(ShowBase):
         ShowBase.__init__(self)
         self.base = base
         self.render = render
+
+        self.camera_controller = Camera()
 
         # initialize shadow
         self.shadow = loader.loadModel(globals.SHADOW_MODEL)
@@ -61,7 +64,7 @@ class VisorView(ShowBase):
         self.build_cog()
 
         self.reset_actor_pos()
-        self.reset_camera_pos()
+        #self.reset_camera_pos()
 
         # we're initialized, time to accept input
         self.accept("space", self.cycle)

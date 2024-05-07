@@ -1,7 +1,7 @@
 import os
 import glob
 
-DEFAULT_POS = (0,0,0)
+DEFAULT_POS = (0,20,-4.2)
 DEFAULT_HPR = (180,0,0)
 
 DEFAULT_CAMERA_POS = (0,-20,4.2)
