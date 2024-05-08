@@ -64,7 +64,7 @@ class VisorView(ShowBase):
         self.build_cog()
 
         self.reset_actor_pos()
-        #self.reset_camera_pos()
+        self.reset_camera_pos()
 
         # we're initialized, time to accept input
         self.accept("space", self.cycle)
