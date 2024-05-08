@@ -15,12 +15,26 @@ class Camera:
         self.enabled = True
         # Disable default p3d camera because we're handling it ourselves.
         base.disableMouse()     
+        self.enable()
+
+    # Enable camera controls
+    def enable(self): 
         base.accept("mouse2", self.enable_rotate_control)
         base.accept("mouse2-up", self.disable_rotate_control)
         base.accept("mouse3", self.enable_zoom_control)
         base.accept("mouse3-up", self.disable_zoom_control)
         base.accept("mouse1", self.enable_pan_control)
         base.accept("mouse1-up", self.disable_pan_control)
+
+    # Disable camera controls + end any ongoing actions
+    def disable(self):
+        base.ignore("mouse2")
+        base.ignore("mouse2-up")
+        base.ignore("mouse3")
+        base.ignore("mouse3-up")
+        base.ignore("mouse1")
+        base.ignore("mouse1-up")
+        self.end_controls()
 
     # Function that gets the mouse's distance from the center, represented as an
     # integer in the range (-1, 1). Returns a set where s[0] = x and s[1] = y
@@ -172,4 +186,11 @@ class Camera:
         upVec = camera.getQuat().getUp()
         camera.setPos(camera.getPos() + rightVec*change_in_x*5.0)
         camera.setPos(camera.getPos() + upVec*change_in_y*5.0)
-        return Task.cont     
+        return Task.cont
+
+    # Function that ensures stops/disables all controls
+    def end_controls(self):
+        self.disable_pan_control()
+        self.disable_rotate_control()
+        self.disable_zoom_control()
+        self.disable_relative_mouse()

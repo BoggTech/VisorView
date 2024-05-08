@@ -91,27 +91,19 @@ class VisorView(ShowBase):
         self.base.screenshot(screenshot_name, False)
 
     def enable_mouse_cam(self):
-        # necessary steps to stop camera being moved after re-enabling
-        mat = Mat4(camera.getMat())
-        mat.invertInPlace()
-        base.mouseInterfaceNode.setMat(mat)
-        base.enableMouse()
+        self.camera_controller.enable()
         
     def disable_mouse_cam(self):
-        base.disableMouse()
+        self.camera_controller.disable()
 
     def reset_camera_roll(self):
-        self.disable_mouse_cam()
         camera.setR(0)
-        self.enable_mouse_cam()
 
     def reset_actor_pos(self):
         self.actor.setPosHpr(*globals.DEFAULT_POS, *globals.DEFAULT_HPR)
 
     def reset_camera_pos(self):
-        self.disable_mouse_cam()
         base.camera.setPosHpr(*globals.DEFAULT_CAMERA_POS,0,0,0)
-        self.enable_mouse_cam()
         
     def toggle_animation_scroll(self, state=None):
         if not state == None:
