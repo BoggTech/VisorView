@@ -4,7 +4,8 @@ import glob
 DEFAULT_POS = (0,0,0)
 DEFAULT_HPR = (180,0,0)
 
-DEFAULT_CAMERA_POS = (0,-20,4.2)
+DEFAULT_CAMERA_NODE_POS = (0,0,4.2)
+DEFAULT_CAMERA_POS = (0,-20,0)
 
 
 # TODO: lots of weird stuff going on here in relation to directories. it might be best to put a main.py in the root directory of the
