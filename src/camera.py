@@ -110,6 +110,9 @@ class Camera(NodePath):
 
     # Function called to disable rotate controls.
     def disable_rotate_control(self):
+        if not taskMgr.hasTaskNamed(ROTATE_TASK_NAME):
+            # we're not running
+            return
         # Revert to normal mode:
         while taskMgr.hasTaskNamed(ROTATE_TASK_NAME):
             taskMgr.remove(ROTATE_TASK_NAME)
@@ -146,6 +149,9 @@ class Camera(NodePath):
 
     # Function called to disable zoom controls.
     def disable_zoom_control(self):
+        if not taskMgr.hasTaskNamed(ZOOM_TASK_NAME):
+            # we're not running
+            return
         # Revert to normal mode:
         while taskMgr.hasTaskNamed(ZOOM_TASK_NAME):
             taskMgr.remove(ZOOM_TASK_NAME)
@@ -177,6 +183,9 @@ class Camera(NodePath):
 
     # Function called to activate pan controls.
     def disable_pan_control(self):
+        if not taskMgr.hasTaskNamed(PAN_TASK_NAME):
+            # we're not running
+            return
         # Revert to normal mode:
         while taskMgr.hasTaskNamed(PAN_TASK_NAME):
             taskMgr.remove(PAN_TASK_NAME)
