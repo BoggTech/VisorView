@@ -39,20 +39,17 @@ class Camera:
     # Function that gets the mouse's distance from the center, represented as an
     # integer in the range (-1, 1). Returns a set where s[0] = x and s[1] = y
     def get_mouse_distance_from_center(self) -> set:
-        change_in_x = 0
-        change_in_y = 0
         props = base.win.getProperties()
         window_size_x = props.getXSize()
         window_size_y = props.getYSize()
-        if base.mouseWatcherNode.hasMouse():
-            # get distance mouse has moved. odd numbers round down
-            pointer = base.win.getPointer(0)
-            mouse_x = pointer.getX()
-            mouse_y = pointer.getY()
-            center_x = window_size_x // 2
-            center_y = window_size_y // 2
-            change_in_x = (mouse_x - center_x) / center_x
-            change_in_y = -(mouse_y - center_y) / center_y
+        # get distance mouse has moved. odd numbers round down
+        pointer = base.win.getPointer(0)
+        mouse_x = pointer.getX()
+        mouse_y = pointer.getY()
+        center_x = window_size_x // 2
+        center_y = window_size_y // 2
+        change_in_x = (mouse_x - center_x) / center_x
+        change_in_y = -(mouse_y - center_y) / center_y
 
         return (change_in_x, change_in_y)
     
@@ -60,10 +57,9 @@ class Camera:
         props = base.win.getProperties()
         window_size_x = props.getXSize()
         window_size_y = props.getYSize()
-        if base.mouseWatcherNode.hasMouse():
-            base.win.movePointer(0,
-                                window_size_x // 2,
-                                window_size_y // 2)
+        base.win.movePointer(0,
+                            window_size_x // 2,
+                            window_size_y // 2)
 
 
     # Panda3D default relative positioning is broken. Use this to enable relative positioning.
