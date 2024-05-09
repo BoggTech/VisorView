@@ -1,14 +1,15 @@
+import globals
+from panda3d.core import loadPrcFile
+loadPrcFile(globals.CONFIG_DIR)
+
 import os
 from datetime import datetime
 from panda3d.core import AntialiasAttrib, Loader
-from panda3d.core import TextNode, Mat4
+from panda3d.core import TextNode
 from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
 from direct.gui.DirectGui import *
-import globals
-
-from panda3d.core import loadPrcFile
-loadPrcFile(globals.CONFIG_DIR)
+from camera import Camera
 
 resources = globals.RESOURCES_DIR
 if not os.path.exists(resources):
@@ -21,13 +22,15 @@ class VisorView(ShowBase):
         self.base = base
         self.render = render
 
+        self.camera_controller = Camera()
+
         # initialize shadow
-        self.shadow = loader.loadModel(globals.SHADOW_MODEL)
-        self.shadow.setScale(globals.SHADOW_SCALE)
-        self.shadow.setColor(globals.SHADOW_COLOR)
+        self.shadow = loader.load_model(globals.SHADOW_MODEL)
+        self.shadow.set_scale(globals.SHADOW_SCALE)
+        self.shadow.set_color(globals.SHADOW_COLOR)
 
         # initialize the gui
-        self.animationScrollList = DirectScrolledList(
+        self.animation_scroll_list = DirectScrolledList(
             incButton_pos=(-1, 0, -.1), 
             incButton_text="DN",
             incButton_text_scale=0.1,
@@ -42,7 +45,7 @@ class VisorView(ShowBase):
             forceHeight=.11,
             
             numItemsVisible=15)
-        self.animationScrollList.hide()
+        self.animation_scroll_list.hide()
         self.is_animation_scroll = False
         
         # initialize our actor
@@ -71,7 +74,6 @@ class VisorView(ShowBase):
         self.accept("a", self.toggle_animation_scroll)
         self.accept("p", self.toggle_pose)
         self.accept("b", self.toggle_blend)
-        self.accept("r", self.reset_camera_roll)
         self.accept("f9", self.take_screenshot)
         self.accept("control-z", self.reset_camera_pos)
         self.accept("wheel_up", self.scroll_up)
@@ -88,27 +90,16 @@ class VisorView(ShowBase):
         self.base.screenshot(screenshot_name, False)
 
     def enable_mouse_cam(self):
-        # necessary steps to stop camera being moved after re-enabling
-        mat = Mat4(camera.getMat())
-        mat.invertInPlace()
-        base.mouseInterfaceNode.setMat(mat)
-        base.enableMouse()
+        self.camera_controller.enable()
         
     def disable_mouse_cam(self):
-        base.disableMouse()
-
-    def reset_camera_roll(self):
-        self.disable_mouse_cam()
-        camera.setR(0)
-        self.enable_mouse_cam()
+        self.camera_controller.disable()
 
     def reset_actor_pos(self):
-        self.actor.setPosHpr(*globals.DEFAULT_POS, *globals.DEFAULT_HPR)
+        self.actor.set_pos_hpr(*globals.DEFAULT_POS, *globals.DEFAULT_HPR)
 
     def reset_camera_pos(self):
-        self.disable_mouse_cam()
-        base.camera.setPosHpr(*globals.DEFAULT_CAMERA_POS,0,0,0)
-        self.enable_mouse_cam()
+        self.camera_controller.reset_position()
         
     def toggle_animation_scroll(self, state=None):
         if not state == None:
@@ -117,15 +108,15 @@ class VisorView(ShowBase):
             self.is_animation_scroll = not self.is_animation_scroll
 
         if self.is_animation_scroll:
-            self.animationScrollList.show()
+            self.animation_scroll_list.show()
             self.disable_mouse_cam()
         else:
-            self.animationScrollList.hide()
+            self.animation_scroll_list.hide()
             self.enable_mouse_cam()
 
     def scroll_up(self):
         if ( self.is_animation_scroll ):
-            self.animationScrollList.scrollBy(-1)
+            self.animation_scroll_list.scrollBy(-1)
         elif ( self.is_posed and self.last_pose_frame != None ):
             self.last_pose_frame += 1
             if self.last_pose_frame > self.actor.getNumFrames(self.current_animation):
@@ -134,7 +125,7 @@ class VisorView(ShowBase):
 
     def scroll_down(self):
         if ( self.is_animation_scroll ):
-            self.animationScrollList.scrollBy(1)
+            self.animation_scroll_list.scrollBy(1)
         elif ( self.is_posed and self.last_pose_frame != None ):
             self.last_pose_frame -= 1
             if self.last_pose_frame < 0:
@@ -167,10 +158,10 @@ class VisorView(ShowBase):
         pos = 0
         hpr = 0
         if not self.actor == None:
-            pos = self.actor.getPos()
-            hpr = self.actor.getHpr()
+            pos = self.actor.get_pos()
+            hpr = self.actor.get_hpr()
             self.actor.cleanup()
-            self.actor.removeNode()
+            self.actor.remove_node()
         
         body_path = ""
         body_animations = {}
@@ -187,7 +178,7 @@ class VisorView(ShowBase):
             body_animations = globals.SUIT_C_ANIMATION_DICT
             self.available_animations = globals.SUIT_C_ANIMATIONS
 
-        self.animationScrollList.removeAndDestroyAllItems()
+        self.animation_scroll_list.removeAndDestroyAllItems()
         for i in self.available_animations:
             if not i == "lose" and not i == "lose_zero":
                 # lose animations have their own body type and viewing them on the wrong model = unpleasant
@@ -198,44 +189,44 @@ class VisorView(ShowBase):
                                             suppressMouse=False,
                                             command=self.set_animation,
                                             extraArgs=[i])
-                self.animationScrollList.addItem(new_button)
+                self.animation_scroll_list.addItem(new_button)
 
         self.actor = Actor(body_path, body_animations)
 
-        self.shadow.reparentTo(self.actor.find('**/def_shadow'))
+        self.shadow.reparent_to(self.actor.find('**/def_shadow'))
 
-        tx_blazer = loader.loadTexture(globals.COG_DATA[self.current_cog]["blazer"])
-        self.actor.find('**/torso').setTexture(tx_blazer, 1)
+        tx_blazer = loader.load_texture(globals.COG_DATA[self.current_cog]["blazer"])
+        self.actor.find('**/torso').set_texture(tx_blazer, 1)
 
-        tx_leg = loader.loadTexture(globals.COG_DATA[self.current_cog]["leg"])
-        self.actor.find('**/legs').setTexture(tx_leg, 1)
+        tx_leg = loader.load_texture(globals.COG_DATA[self.current_cog]["leg"])
+        self.actor.find('**/legs').set_texture(tx_leg, 1)
 
-        tx_sleeve = loader.loadTexture(globals.COG_DATA[self.current_cog]["sleeve"])
-        self.actor.find('**/arms').setTexture(tx_sleeve, 1)
+        tx_sleeve = loader.load_texture(globals.COG_DATA[self.current_cog]["sleeve"])
+        self.actor.find('**/arms').set_texture(tx_sleeve, 1)
         
-        self.actor.find('**/hands').setColor(globals.COG_DATA[self.current_cog]["hands"])
+        self.actor.find('**/hands').set_color(globals.COG_DATA[self.current_cog]["hands"])
 
         medallion = globals.COG_DATA[self.current_cog]["emblem"]
         chest_null = self.actor.find("**/def_joint_attachMeter")
-        icons = loader.loadModel(globals.COG_ICONS)
-        corp_medallion = icons.find('**/' + medallion).copyTo(chest_null)
-        corp_medallion.setPosHprScale(*globals.COG_ICON_POS_HPR_SCALE)
+        icons = loader.load_model(globals.COG_ICONS)
+        corp_medallion = icons.find('**/' + medallion).copy_to(chest_null)
+        corp_medallion.set_pos_hpr_scale(*globals.COG_ICON_POS_HPR_SCALE)
 
-        head = loader.loadModel(globals.COG_DATA[self.current_cog]["head"])
-        head.reparentTo(self.actor.find('**/def_head'))
+        head = loader.load_model(globals.COG_DATA[self.current_cog]["head"])
+        head.reparent_to(self.actor.find('**/def_head'))
 
-        self.actor.setScale(globals.COG_DATA[self.current_cog]["scale"])
+        self.actor.set_scale(globals.COG_DATA[self.current_cog]["scale"])
 
-        self.actor.setPos(pos)
-        self.actor.setHpr(hpr)
+        self.actor.set_pos(pos)
+        self.actor.set_hpr(hpr)
 
         # match settings
         self.toggle_head(False)
         self.toggle_shadow(False)
         self.toggle_body(False)
 
-        self.actor.reparentTo(render)
-        self.actor.setBlend(frameBlend=self.is_blend)
+        self.actor.reparent_to(render)
+        self.actor.set_blend(frameBlend=self.is_blend)
     
     # Function that switches to the next cog in the index
     def cycle(self):
@@ -284,5 +275,5 @@ class VisorView(ShowBase):
 
     
 app = VisorView()
-app.render.setAntialias(AntialiasAttrib.MMultisample)
+app.render.set_antialias(AntialiasAttrib.MMultisample)
 app.run()

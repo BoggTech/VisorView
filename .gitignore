@@ -145,7 +145,7 @@ dmypy.json
 cython_debug/
 
 # Resources
-resources/phase_*
+resources/*
 
 # Screenshots
 screenshots/*
