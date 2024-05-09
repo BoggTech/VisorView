@@ -74,7 +74,6 @@ class VisorView(ShowBase):
         self.accept("a", self.toggle_animation_scroll)
         self.accept("p", self.toggle_pose)
         self.accept("b", self.toggle_blend)
-        self.accept("r", self.reset_camera_roll)
         self.accept("f9", self.take_screenshot)
         self.accept("control-z", self.reset_camera_pos)
         self.accept("wheel_up", self.scroll_up)
@@ -95,10 +94,6 @@ class VisorView(ShowBase):
         
     def disable_mouse_cam(self):
         self.camera_controller.disable()
-
-    def reset_camera_roll(self):
-        # TODO: change!!!
-        self.camera_controller.set_r(0)
 
     def reset_actor_pos(self):
         self.actor.set_pos_hpr(*globals.DEFAULT_POS, *globals.DEFAULT_HPR)
