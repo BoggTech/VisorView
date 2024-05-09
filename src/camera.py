@@ -60,34 +60,29 @@ class Camera:
         base.win.movePointer(0,
                             window_size_x // 2,
                             window_size_y // 2)
-        print("moved!")
 
 
     # Panda3D default relative positioning is broken. Use this to enable relative positioning.
     def enable_relative_mouse(self):
         if taskMgr.hasTaskNamed(RELATIVE_CAMERA_TASK_NAME):
             # already running
-            print("0")
             return
+        self.window_properties.setCursorHidden(True)
         base.win.requestProperties(self.window_properties)
-        print("1")
         self.move_mouse_to_center()
         taskMgr.add(self.relative_camera_task, 
                     RELATIVE_CAMERA_TASK_NAME, 
                     priority=RELATIVE_CAMERA_TASK_PRIORITY)
-        print("end enable_relative_mouse")
         
     def disable_relative_mouse(self):
         self.window_properties.setCursorHidden(False)
         base.win.requestProperties(self.window_properties)
         while taskMgr.hasTaskNamed(RELATIVE_CAMERA_TASK_NAME):
             taskMgr.remove(RELATIVE_CAMERA_TASK_NAME)
-        print("disabled")
 
     # Task that resets the camera to the center. It should be run with a
     # higher (asin, the actual number) priority so that it runs last in the chain. 
     def relative_camera_task(self, task):
-        print("task")
         self.move_mouse_to_center()
         return Task.cont
 
