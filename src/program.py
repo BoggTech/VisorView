@@ -1,6 +1,4 @@
-import globals
-from panda3d.core import loadPrcFile
-loadPrcFile(globals.CONFIG_DIR)
+import src.globals as globals
 
 import os
 from datetime import datetime
@@ -9,7 +7,7 @@ from panda3d.core import TextNode
 from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
 from direct.gui.DirectGui import *
-from camera import Camera
+from src.camera import Camera
 
 resources = globals.RESOURCES_DIR
 if not os.path.exists(resources):

@@ -1,6 +1,6 @@
 from panda3d.core import WindowProperties, NodePath
 from direct.task import Task
-import globals
+import src.globals as globals
 
 RELATIVE_CAMERA_TASK_PRIORITY = 2                  # Camera reset must be higher so it runs last
 DEFAULT_CAMERA_TASK_PRIORITY = 1                   # Therefore, use this for anything else.
