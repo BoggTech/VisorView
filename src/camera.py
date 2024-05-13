@@ -14,7 +14,7 @@ class Camera(NodePath):
     """A NodePath that is parented to the Panda3D camera and implements mouse control."""
     
     def __init__(self) -> None:
-        """Disables the default camera controls, moves the camera to its default position, and enables mouse input."""
+        """Disables the default camera controls, moves the camera to its default position, reparents the camera, and enables mouse input."""
         super().__init__("camera_node")
 
         self.window_properties = WindowProperties()
