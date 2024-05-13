@@ -15,14 +15,10 @@ if not os.path.exists(resources):
             print("Please input Toontown Rewritten extracted phase files!")
 
 class VisorView(ShowBase):
-    """
-    ShowBase instance for VisorView.
-    """
+    """ShowBase instance for VisorView."""
 
     def __init__(self):
-        """
-        Initializes the ShowBase as well as a number of local variables required by VisorView and accepts input events.
-        """
+        """Initializes the ShowBase as well as a number of local variables required by VisorView and accepts input events."""
         ShowBase.__init__(self)
         self.base = base
         self.render = render
@@ -85,9 +81,7 @@ class VisorView(ShowBase):
         self.accept("wheel_down", self.scroll_down)
     
     def take_screenshot(self):
-        """
-        Takes a screenshot of the ShowBase window and saves it to the screenshot directory as defined in globals.py.
-        """
+        """Function that takes a screenshot of the ShowBase window and saves it to the screenshot directory as defined in globals.py."""
         path = globals.SCREENSHOT_DIR
         if not os.path.exists(path):
             os.makedirs(path)
@@ -98,34 +92,24 @@ class VisorView(ShowBase):
         self.base.screenshot(screenshot_name, False)
 
     def enable_mouse_cam(self):
-        """
-        Enables movement of the camera via the mouse.
-        """
+        """Enables movement of the camera via the mouse."""
         self.camera_controller.enable()
         
     def disable_mouse_cam(self):
-        """
-        Disables movement of the camera via the mouse.
-        """
+        """Disables movement of the camera via the mouse."""
         self.camera_controller.disable()
 
     def reset_actor_pos(self):
-        """
-        Resets the position of the actor to default as defined in globals.py.
-        """
+        """Resets the position of the actor to default as defined in globals.py."""
         self.actor.set_pos_hpr(*globals.DEFAULT_POS, *globals.DEFAULT_HPR)
 
     def reset_camera_pos(self):
-        """
-        Resets the position of the camera to default as defined in globals.py.
-        """
+        """Resets the position of the camera to default as defined in globals.py."""
         self.camera_controller.reset_position()
     
     # TODO: GUI should be rewritten entirely and brought to their own classes, and input should be handled in there.
     def scroll_up(self):
-        """
-        Function that should be called when the mousewheel is scrolled up, used for functionality in pose mode and the animation list.
-        """
+        """Function that should be called when the mousewheel is scrolled up, used for functionality in pose mode and the animation list."""
         if ( self.is_animation_scroll ):
             self.animation_scroll_list.scrollBy(-1)
         elif ( self.is_posed and self.last_pose_frame != None ):
@@ -135,9 +119,7 @@ class VisorView(ShowBase):
             self.actor.pose(self.current_animation, self.last_pose_frame)
 
     def scroll_down(self):
-        """
-        Function that should be called when the mousewheel is scrolled down, used for functionality in pose mode and the animation list.
-        """
+        """Function that should be called when the mousewheel is scrolled down, used for functionality in pose mode and the animation list."""
         if ( self.is_animation_scroll ):
             self.animation_scroll_list.scrollBy(1)
         elif ( self.is_posed and self.last_pose_frame != None ):
@@ -147,9 +129,7 @@ class VisorView(ShowBase):
             self.actor.pose(self.current_animation, self.last_pose_frame)
     
     def build_cog(self):
-        """
-        Function that gets the name of the current cog and assembles/configures its based on paramaters defined in globals.py.
-        """
+        """Function that gets the name of the current cog and assembles/configures its based on paramaters defined in globals.py."""
         # make sure the new actor is in the same place _ previous actor is removed
         pos = 0
         hpr = 0
@@ -225,9 +205,7 @@ class VisorView(ShowBase):
         self.actor.set_blend(frameBlend=self.is_blend)
     
     def cycle(self):
-        """
-        Function that rotates to the next cog in the list of cogs defined in globals.py 
-        """
+        """Function that rotates to the next cog in the list of cogs defined in globals.py """
         self.current_cog_index += 1
         if ( self.current_cog_index >= len(self.cog_list) ):
             self.current_cog_index = 0
@@ -235,9 +213,7 @@ class VisorView(ShowBase):
         self.build_cog()
 
     def set_animation(self, animation):
-        """
-        Function that switches the actors currently playing animation.
-        """
+        """Function that switches the actors currently playing animation."""
         self.current_animation = animation
         self.actor.loop(animation)
 
@@ -245,9 +221,7 @@ class VisorView(ShowBase):
         self.is_posed = False
 
     def toggle_pose(self):
-        """
-        Toggle pose mode on or off. Closes any open UI.
-        """
+        """Function that toggles pose mode on or off. Closes any open UI."""
         self.is_posed = not self.is_posed
         if self.is_posed:
             # if the scroll is open, toggle it
@@ -258,15 +232,12 @@ class VisorView(ShowBase):
             self.actor.loop(self.current_animation)
 
     def toggle_blend(self):
-        """
-        Toggle animation blending on the actor.
-        """
+        """Function that toggles animation blending on the actor."""
         self.is_blend = not self.is_blend
         self.actor.setBlend(frameBlend=self.is_blend)
 
     def toggle_animation_scroll(self, state=None):
-        """
-        Toggle the animation scroll list. Mouse controls are disabled when its open.
+        """Function that toggles the animation scroll list. Mouse controls are disabled when its open.
 
         :param boolean state: The desired state. Set to None by default, which will simply toggle the current state.
         """
@@ -284,8 +255,7 @@ class VisorView(ShowBase):
             self.enable_mouse_cam()
 
     def toggle_shadow(self, update_state=True):
-        """
-        Function to toggle the actor's shadow visibility.
+        """Function that toggles the actor's shadow visibility.
 
         :param boolean update_state: True by default, if False it will not toggle the current state.
         """
@@ -298,8 +268,7 @@ class VisorView(ShowBase):
             self.shadow.hide()
 
     def toggle_head(self, update_state=True):
-        """
-        Function that toggles the actor's head visibility.
+        """Function that toggles the actor's head visibility.
         
         :param boolean update_state: True by default, if False it will not toggle the current state.
         """
@@ -312,8 +281,7 @@ class VisorView(ShowBase):
             self.actor.find('**/def_head').hide()
 
     def toggle_body(self, update_state=True):
-        """
-        Function to toggle the actor's body visibility.
+        """Function that toggles the actor's body visibility.
 
         :param boolean update_state: True by default, if False it will not toggle the current state.
         """
