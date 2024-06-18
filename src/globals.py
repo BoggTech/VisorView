@@ -14,6 +14,7 @@ SUIT_A_MODEL = os.path.join(RESOURCES_DIR, "phase_3.5", "models", "char", "tt_a_
 SUIT_B_MODEL = os.path.join(RESOURCES_DIR, "phase_3.5", "models", "char", "tt_a_ene_cgb_zero.bam")
 SUIT_C_MODEL = os.path.join(RESOURCES_DIR, "phase_3.5", "models", "char", "tt_a_ene_cgc_zero.bam")
 BOILER_MODEL = os.path.join(RESOURCES_DIR, "phase_5", "models", "char", "ttr_r_chr_cbg_boss.bam")
+FIELD_OFFICE_MODEL = os.path.join(RESOURCES_DIR, "phase_5", "models", "char", "ttr_r_ara_cbe_cogdoSell.bam")
 
 SHADOW_MODEL = os.path.join(RESOURCES_DIR, "phase_3", "models", "props", "drop_shadow.bam")
 SHADOW_SCALE = 0.45
@@ -32,11 +33,13 @@ SUIT_A_ANIMATION_PATHS = glob.glob(os.path.join(RESOURCES_DIR, "**", "tt_a_ene_c
 SUIT_B_ANIMATION_PATHS = glob.glob(os.path.join(RESOURCES_DIR, "**", "tt_a_ene_cgb_*.bam"), recursive=True)
 SUIT_C_ANIMATION_PATHS = glob.glob(os.path.join(RESOURCES_DIR, "**", "tt_a_ene_cgc_*.bam"), recursive=True)
 BOILER_ANIMATION_PATHS = glob.glob(os.path.join(RESOURCES_DIR, "**", "ttr_a_chr_cbg_boss_*.bam"), recursive=True)
+FIELD_OFFICE_ANIMATION_PATHS = glob.glob(os.path.join(RESOURCES_DIR, "**", "ttr_a_ara_cbe_cogdoSell_*.bam"), recursive=True)
 
 SUIT_A_ANIMATION_DICT = {}
 SUIT_B_ANIMATION_DICT = {}
 SUIT_C_ANIMATION_DICT = {}
 BOILER_ANIMATION_DICT = {}
+FIELD_OFFICE_ANIMATION_DICT = {}
 
 # split em up into dictionaries for the actor
 for i in range(0, len(SUIT_A_ANIMATION_PATHS)):
@@ -51,14 +54,19 @@ for i in range(0, len(SUIT_C_ANIMATION_PATHS)):
 for i in range(0, len(BOILER_ANIMATION_PATHS)):
     BOILER_ANIMATION_DICT[os.path.basename(BOILER_ANIMATION_PATHS[i])[19:-4]] = BOILER_ANIMATION_PATHS[i]
 
+for i in range(0, len(FIELD_OFFICE_ANIMATION_PATHS)):
+    FIELD_OFFICE_ANIMATION_DICT[os.path.basename(FIELD_OFFICE_ANIMATION_PATHS[i])[24:-4]] = FIELD_OFFICE_ANIMATION_PATHS[i]
+
 SUIT_A_ANIMATIONS = list(SUIT_A_ANIMATION_DICT)
 SUIT_B_ANIMATIONS = list(SUIT_B_ANIMATION_DICT)
 SUIT_C_ANIMATIONS = list(SUIT_C_ANIMATION_DICT)
 BOILER_ANIMATIONS = list(BOILER_ANIMATION_DICT)
+FIELD_OFFICE_ANIMATIONS = list(FIELD_OFFICE_ANIMATION_DICT)
 SUIT_A_ANIMATIONS.sort()
 SUIT_B_ANIMATIONS.sort()
 SUIT_C_ANIMATIONS.sort()
 BOILER_ANIMATIONS.sort()
+FIELD_OFFICE_ANIMATIONS.sort()
 
 COG_DATA = {
     "foreman": {"blazer": os.path.join(RESOURCES_DIR, "phase_3.5", "maps", "ttr_t_ene_sellbotForeman_blazer.jpg"),
@@ -108,5 +116,6 @@ COG_DATA = {
         "suit": "a",
         "emblem": "CorpIcon"},
 
-    "boiler": {}
+    "boiler": {},
+    "field_office": {}
 }

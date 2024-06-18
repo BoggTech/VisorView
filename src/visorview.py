@@ -145,6 +145,10 @@ class VisorView(ShowBase):
             self.actor.reparent_to(render)
             self.actor.set_scale(0.5)
             self.available_animations = globals.BOILER_ANIMATIONS
+        elif self.current_cog == "field_office":
+            self.actor = Actor(globals.FIELD_OFFICE_MODEL, globals.FIELD_OFFICE_ANIMATION_DICT)
+            self.actor.reparent_to(render)
+            self.available_animations = globals.FIELD_OFFICE_ANIMATIONS
         else:
             body_path = ""
             body_animations = {}
@@ -214,7 +218,7 @@ class VisorView(ShowBase):
     def cycle(self):
         """Function that rotates to the next cog in the list of cogs defined in globals.py """
         # hacky change for boiler on this branch only
-        if self.current_cog == "boiler":
+        if self.current_cog == "boiler" or self.current_cog == "field_office":
             self.actor.setH(180)
         self.current_cog_index += 1
         if ( self.current_cog_index >= len(self.cog_list) ):
