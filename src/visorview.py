@@ -138,74 +138,84 @@ class VisorView(ShowBase):
             hpr = self.actor.get_hpr()
             self.actor.cleanup()
             self.actor.remove_node()
-        
-        body_path = ""
-        body_animations = {}
-        if ( globals.COG_DATA[self.current_cog]["suit"] == "a" ):
-            body_path = globals.SUIT_A_MODEL
-            body_animations = globals.SUIT_A_ANIMATION_DICT
-            self.available_animations = globals.SUIT_A_ANIMATIONS
-        elif ( globals.COG_DATA[self.current_cog]["suit"] == "b" ):
-            body_path = globals.SUIT_B_MODEL
-            body_animations = globals.SUIT_B_ANIMATION_DICT
-            self.available_animations = globals.SUIT_B_ANIMATIONS
+
+        # Hacked in boiler for this branch only
+        if self.current_cog == "boiler":
+            self.actor = Actor(globals.BOILER_MODEL, globals.BOILER_ANIMATION_DICT)
+            self.actor.reparent_to(render)
+            self.actor.set_scale(0.5)
+            self.available_animations = globals.BOILER_ANIMATIONS
         else:
-            body_path = globals.SUIT_C_MODEL
-            body_animations = globals.SUIT_C_ANIMATION_DICT
-            self.available_animations = globals.SUIT_C_ANIMATIONS
+            body_path = ""
+            body_animations = {}
+            if ( globals.COG_DATA[self.current_cog]["suit"] == "a" ):
+                body_path = globals.SUIT_A_MODEL
+                body_animations = globals.SUIT_A_ANIMATION_DICT
+                self.available_animations = globals.SUIT_A_ANIMATIONS
+            elif ( globals.COG_DATA[self.current_cog]["suit"] == "b" ):
+                body_path = globals.SUIT_B_MODEL
+                body_animations = globals.SUIT_B_ANIMATION_DICT
+                self.available_animations = globals.SUIT_B_ANIMATIONS
+            else:
+                body_path = globals.SUIT_C_MODEL
+                body_animations = globals.SUIT_C_ANIMATION_DICT
+                self.available_animations = globals.SUIT_C_ANIMATIONS
+
+            self.actor = Actor(body_path, body_animations)
+
+            self.shadow.reparent_to(self.actor.find('**/def_shadow'))
+
+            tx_blazer = loader.load_texture(globals.COG_DATA[self.current_cog]["blazer"])
+            self.actor.find('**/torso').set_texture(tx_blazer, 1)
+
+            tx_leg = loader.load_texture(globals.COG_DATA[self.current_cog]["leg"])
+            self.actor.find('**/legs').set_texture(tx_leg, 1)
+
+            tx_sleeve = loader.load_texture(globals.COG_DATA[self.current_cog]["sleeve"])
+            self.actor.find('**/arms').set_texture(tx_sleeve, 1)
+
+            self.actor.find('**/hands').set_color(globals.COG_DATA[self.current_cog]["hands"])
+
+            medallion = globals.COG_DATA[self.current_cog]["emblem"]
+            chest_null = self.actor.find("**/def_joint_attachMeter")
+            icons = loader.load_model(globals.COG_ICONS)
+            corp_medallion = icons.find('**/' + medallion).copy_to(chest_null)
+            corp_medallion.set_pos_hpr_scale(*globals.COG_ICON_POS_HPR_SCALE)
+
+            head = loader.load_model(globals.COG_DATA[self.current_cog]["head"])
+            head.reparent_to(self.actor.find('**/def_head'))
+
+            self.actor.set_scale(globals.COG_DATA[self.current_cog]["scale"])
+
+            self.actor.set_pos(pos)
+            self.actor.set_hpr(hpr)
+
+            # match settings
+            self.toggle_head(False)
+            self.toggle_shadow(False)
+            self.toggle_body(False)
+
+            self.actor.reparent_to(render)
+            self.actor.set_blend(frameBlend=self.is_blend)
 
         self.animation_scroll_list.removeAndDestroyAllItems()
         for i in self.available_animations:
             if not i == "lose" and not i == "lose_zero":
                 # lose animations have their own body type and viewing them on the wrong model = unpleasant
-                new_button = DirectButton(text=i, 
-                                            text_scale=0.1, 
-                                            text_align = TextNode.ALeft, 
-                                            relief = None,
-                                            suppressMouse=False,
-                                            command=self.set_animation,
-                                            extraArgs=[i])
+                new_button = DirectButton(text=i,
+                                          text_scale=0.1,
+                                          text_align=TextNode.ALeft,
+                                          relief=None,
+                                          suppressMouse=False,
+                                          command=self.set_animation,
+                                          extraArgs=[i])
                 self.animation_scroll_list.addItem(new_button)
-
-        self.actor = Actor(body_path, body_animations)
-
-        self.shadow.reparent_to(self.actor.find('**/def_shadow'))
-
-        tx_blazer = loader.load_texture(globals.COG_DATA[self.current_cog]["blazer"])
-        self.actor.find('**/torso').set_texture(tx_blazer, 1)
-
-        tx_leg = loader.load_texture(globals.COG_DATA[self.current_cog]["leg"])
-        self.actor.find('**/legs').set_texture(tx_leg, 1)
-
-        tx_sleeve = loader.load_texture(globals.COG_DATA[self.current_cog]["sleeve"])
-        self.actor.find('**/arms').set_texture(tx_sleeve, 1)
-        
-        self.actor.find('**/hands').set_color(globals.COG_DATA[self.current_cog]["hands"])
-
-        medallion = globals.COG_DATA[self.current_cog]["emblem"]
-        chest_null = self.actor.find("**/def_joint_attachMeter")
-        icons = loader.load_model(globals.COG_ICONS)
-        corp_medallion = icons.find('**/' + medallion).copy_to(chest_null)
-        corp_medallion.set_pos_hpr_scale(*globals.COG_ICON_POS_HPR_SCALE)
-
-        head = loader.load_model(globals.COG_DATA[self.current_cog]["head"])
-        head.reparent_to(self.actor.find('**/def_head'))
-
-        self.actor.set_scale(globals.COG_DATA[self.current_cog]["scale"])
-
-        self.actor.set_pos(pos)
-        self.actor.set_hpr(hpr)
-
-        # match settings
-        self.toggle_head(False)
-        self.toggle_shadow(False)
-        self.toggle_body(False)
-
-        self.actor.reparent_to(render)
-        self.actor.set_blend(frameBlend=self.is_blend)
     
     def cycle(self):
         """Function that rotates to the next cog in the list of cogs defined in globals.py """
+        # hacky change for boiler on this branch only
+        if self.current_cog == "boiler":
+            self.actor.setH(180)
         self.current_cog_index += 1
         if ( self.current_cog_index >= len(self.cog_list) ):
             self.current_cog_index = 0
