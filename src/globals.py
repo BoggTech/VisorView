@@ -16,6 +16,9 @@ SUIT_C_MODEL = os.path.join(RESOURCES_DIR, "phase_3.5", "models", "char", "tt_a_
 BOILER_MODEL = os.path.join(RESOURCES_DIR, "phase_5", "models", "char", "ttr_r_chr_cbg_boss.bam")
 FIELD_OFFICE_MODEL = os.path.join(RESOURCES_DIR, "phase_5", "models", "char", "ttr_r_ara_cbe_cogdoSell.bam")
 GOON_MODEL = os.path.join(RESOURCES_DIR, "phase_9", "models", "char", "ttr_r_chr_ene_cogGoonie.bam")
+SKELE_A_MODEL = os.path.join(RESOURCES_DIR, "phase_5", "models", "char", "tt_a_ene_sca_zero.bam")
+SKELE_B_MODEL = os.path.join(RESOURCES_DIR, "phase_5", "models", "char", "tt_a_ene_scb_zero.bam")
+SKELE_C_MODEL = os.path.join(RESOURCES_DIR, "phase_5", "models", "char", "tt_a_ene_scc_zero.bam")
 
 SHADOW_MODEL = os.path.join(RESOURCES_DIR, "phase_3", "models", "props", "drop_shadow.bam")
 SHADOW_SCALE = 0.45
@@ -123,9 +126,12 @@ COG_DATA = {
         "scale": 0.706,
         "suit": "a",
         "emblem": "CorpIcon"},
-
+    "skele_a": {"type": "a"},
+    "skele_b": {"type": "b"},
+    "skele_c": {"type": "c"},
     "boiler": {},
     "field_office": {},
     "security": {},
     "construction": {}
+
 }

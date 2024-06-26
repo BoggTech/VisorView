@@ -9,6 +9,8 @@ from direct.actor.Actor import Actor
 from direct.gui.DirectGui import *
 from src.camera import Camera
 
+from panda3d.core import ColorBlendAttrib, TransparencyAttrib
+
 resources = globals.RESOURCES_DIR
 if not os.path.exists(resources):
             os.makedirs(resources)
@@ -127,7 +129,22 @@ class VisorView(ShowBase):
             if self.last_pose_frame < 0:
                 self.last_pose_frame = self.actor.getNumFrames(self.current_animation)
             self.actor.pose(self.current_animation, self.last_pose_frame)
-    
+
+    def virtualize(self, deathsuit):
+        """Method that creates the virtual skelecog effect"""
+        actorNode = deathsuit.find("**/__Actor_modelRoot")
+        actorCollection = actorNode.findAllMatches("*")
+        parts = ()
+        for thingIndex in range(0, actorCollection.getNumPaths()):
+            thing = actorCollection[thingIndex]
+            attrib = ColorBlendAttrib.make(ColorBlendAttrib.MAdd, ColorBlendAttrib.OIncomingAlpha,
+                                           ColorBlendAttrib.OOne)
+            if thing.getName() not in ('def_joint_attachMeter', 'def_joint_nameTag'):
+                thing.setColorScale(1.0, 0.0, 0.0, 1)
+                thing.setAttrib(attrib)
+                thing.setDepthWrite(False)
+                thing.setBin('fixed', 1)
+
     def build_cog(self):
         """Function that gets the name of the current cog and assembles/configures its based on paramaters defined in globals.py."""
         # make sure the new actor is in the same place _ previous actor is removed
@@ -153,12 +170,45 @@ class VisorView(ShowBase):
             self.actor = Actor(globals.GOON_MODEL, globals.GOON_ANIMATION_DICT)
             self.actor.reparent_to(render)
             self.available_animations = globals.GOON_ANIMATIONS
-            self.actor.find("**/eye").set_color(1,1,0,1)
+            #self.actor.find("**/eye").set_color(1,1,0,1)
             if self.current_cog == "security":
                 self.actor.find("**/hard_hat").hide()
             else:
                 self.actor.find("**/security_hat").hide()
                 self.actor.find("**/security_hat_badge").hide()
+                #self.actor.find("**/hard_hat").set_color(0.95, 0.0, 0.0, 1.0)
+            #rusty
+            #self.actor.set_color(.5,.2,.2)
+        elif "skele" in self.current_cog:
+            skele_model = ""
+            animations_dict = {}
+            animations = []
+            if globals.COG_DATA[self.current_cog]["type"] == "a":
+                skele_model = globals.SKELE_A_MODEL
+                animations_dict = globals.SUIT_A_ANIMATION_DICT
+                animations = globals.SUIT_A_ANIMATIONS
+            elif globals.COG_DATA[self.current_cog]["type"] == "b":
+                skele_model = globals.SKELE_B_MODEL
+                animations_dict = globals.SUIT_B_ANIMATION_DICT
+                animations = globals.SUIT_B_ANIMATIONS
+            else:
+                skele_model = globals.SKELE_C_MODEL
+                animations_dict = globals.SUIT_C_ANIMATION_DICT
+                animations = globals.SUIT_C_ANIMATIONS
+            self.actor = Actor(skele_model, animations_dict)
+            self.actor.reparent_to(render)
+            self.available_animations = animations
+            self.actor.setH(180)
+
+            # Uncomment for Virtual Skelecogs.
+            #self.virtualize(self.actor)
+
+            medallion = "LegalIcon"
+            chest_null = self.actor.find("**/def_joint_attachMeter")
+            icons = loader.load_model(globals.COG_ICONS)
+            corp_medallion = icons.find('**/' + medallion).copy_to(chest_null)
+            corp_medallion.set_pos_hpr_scale(*globals.COG_ICON_POS_HPR_SCALE)
+
         else:
             body_path = ""
             body_animations = {}
@@ -228,7 +278,7 @@ class VisorView(ShowBase):
     def cycle(self):
         """Function that rotates to the next cog in the list of cogs defined in globals.py """
         # hacky change for boiler on this branch only
-        if self.current_cog in ["boiler", "field_office", "security", "construction"]:
+        if self.current_cog not in ["foreman", "foreman_angry", "clerk", "auditor", "club_president"]:
             self.actor.setH(180)
         self.current_cog_index += 1
         if ( self.current_cog_index >= len(self.cog_list) ):
