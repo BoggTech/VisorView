@@ -170,9 +170,12 @@ class VisorView(ShowBase):
             self.actor = Actor(globals.GOON_MODEL, globals.GOON_ANIMATION_DICT)
             self.actor.reparent_to(render)
             self.available_animations = globals.GOON_ANIMATIONS
-            #self.actor.find("**/eye").set_color(1,1,0,1)
+            self.actor.find("**/eye").set_color(1,1,0,1)
             if self.current_cog == "security":
                 self.actor.find("**/hard_hat").hide()
+                #  sg colours
+                #self.actor.find("**/security_hat").set_color(0.47, 0.55, 1, 1)
+                #self.actor.find("**/security_hat").set_color(.51, 0.23, 0.75, 1)   
             else:
                 self.actor.find("**/security_hat").hide()
                 self.actor.find("**/security_hat_badge").hide()

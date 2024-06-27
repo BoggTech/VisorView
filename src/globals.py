@@ -131,7 +131,6 @@ COG_DATA = {
     "skele_c": {"type": "c"},
     "boiler": {},
     "field_office": {},
-    "security": {},
-    "construction": {}
-
+    "construction": {},
+    "security": {}
 }
