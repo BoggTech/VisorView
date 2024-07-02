@@ -8,11 +8,13 @@ from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
 from direct.gui.DirectGui import *
 from src.camera import Camera
+from src.actors.actor_globals import ACTORS
 
 resources = globals.RESOURCES_DIR
 if not os.path.exists(resources):
-            os.makedirs(resources)
-            print("Please input Toontown Rewritten extracted phase files!")
+    os.makedirs(resources)
+    print("Please input Toontown Rewritten extracted phase files!")
+
 
 class VisorView(ShowBase):
     """ShowBase instance for VisorView."""
@@ -20,48 +22,39 @@ class VisorView(ShowBase):
     def __init__(self):
         """Initializes the ShowBase as well as a number of local variables required by VisorView and accepts input events."""
         ShowBase.__init__(self)
-        self.base = base
-        self.render = render
-
         self.camera_controller = Camera()
-
-        # initialize shadow
-        self.shadow = loader.load_model(globals.SHADOW_MODEL)
-        self.shadow.set_scale(globals.SHADOW_SCALE)
-        self.shadow.set_color(globals.SHADOW_COLOR)
 
         # initialize the gui
         self.animation_scroll_list = DirectScrolledList(
-            incButton_pos=(-1, 0, -.1), 
-            incButton_text="DN",
-            incButton_text_scale=0.1,
+            incButton_pos=(-1, 0, -.1), incButton_text="DN", incButton_text_scale=0.1,
             incButton_borderWidth=(0.05, 0.05),
-            
-            decButton_pos=(-1, 0, .1), 
-            decButton_text="UP", 
-            decButton_text_scale=0.1,
+            decButton_pos=(-1, 0, .1), decButton_text="UP", decButton_text_scale=0.1,
             decButton_borderWidth=(0.05, 0.05),
-
-            itemFrame_pos=(-.8, 0, 0.8),
-            forceHeight=.11,
-            
-            numItemsVisible=15)
+            itemFrame_pos=(-.8, 0, 0.8), forceHeight=.11, numItemsVisible=15)
         self.animation_scroll_list.hide()
-        self.is_animation_scroll = False
-        
-        # initialize our actor
-        self.actor = None
         self.available_animations = []
-        self.is_shadow = True
+        self.is_animation_scroll = False
+
+        # initialize various states
         self.is_head = True
         self.is_body = True
-        self.is_posed = False
         self.is_blend = True
-        self.current_animation = "zero"
+
+        # initialize pose mode
+        self.is_posed = False
+        self.current_animation = None
         self.last_pose_frame = 0
-        self.cog_list = list(globals.COG_DATA)
-        self.current_cog_index = 0
-        self.current_cog = self.cog_list[self.current_cog_index]
+
+        # initialize shadow to be used by the actor
+        self.shadow = loader.loadModel(globals.SHADOW_MODEL)
+        self.shadow.setScale(globals.SHADOW_SCALE)
+        self.shadow.setColor(globals.SHADOW_COLOR)
+        self.is_shadow = True
+
+        # initialize our actor
+        self.actors = ACTORS["supervisors"]
+        self.actor = None
+        self.index = 0
         self.build_cog()
 
         self.reset_actor_pos()
@@ -69,9 +62,16 @@ class VisorView(ShowBase):
 
         # we're initialized, time to accept input
         self.accept("space", self.cycle)
+        self.accept("arrow_left", lambda: self.cycle(True))
+        self.accept("arrow_right", lambda: self.cycle(False))
         self.accept("s", self.toggle_shadow)
         self.accept("control-b", self.toggle_body)
         self.accept("control-h", self.toggle_head)
+        self.accept("1", lambda: self.switch_actor_set("supervisors"))
+        self.accept("2", lambda: self.switch_actor_set("sellbots"))
+        self.accept("3", lambda: self.switch_actor_set("cashbots"))
+        self.accept("4", lambda: self.switch_actor_set("lawbots"))
+        self.accept("5", lambda: self.switch_actor_set("bossbots"))
         self.accept("a", self.toggle_animation_scroll)
         self.accept("p", self.toggle_pose)
         self.accept("b", self.toggle_blend)
@@ -79,22 +79,25 @@ class VisorView(ShowBase):
         self.accept("control-z", self.reset_camera_pos)
         self.accept("wheel_up", self.scroll_up)
         self.accept("wheel_down", self.scroll_down)
-    
+
     def take_screenshot(self):
-        """Function that takes a screenshot of the ShowBase window and saves it to the screenshot directory as defined in globals.py."""
+        """Function that takes a screenshot of the ShowBase window and saves it to the screenshot directory as
+        defined in globals.py."""
         path = globals.SCREENSHOT_DIR
         if not os.path.exists(path):
             os.makedirs(path)
-        
+
+        current_cog = self.actors[self.index].get_name()
+
         now = datetime.now()
         date_string = now.strftime("%d-%m-%Y-%H-%M-%S")
-        screenshot_name = os.path.join(path, "ss-{}-{}.png".format(self.current_cog, date_string))
-        self.base.screenshot(screenshot_name, False)
+        screenshot_name = os.path.join(path, "ss-{}-{}.png".format(current_cog, date_string))
+        base.screenshot(screenshot_name, False)
 
     def enable_mouse_cam(self):
         """Enables movement of the camera via the mouse."""
         self.camera_controller.enable()
-        
+
     def disable_mouse_cam(self):
         """Disables movement of the camera via the mouse."""
         self.camera_controller.disable()
@@ -106,110 +109,85 @@ class VisorView(ShowBase):
     def reset_camera_pos(self):
         """Resets the position of the camera to default as defined in globals.py."""
         self.camera_controller.reset_position()
-    
+
     # TODO: GUI should be rewritten entirely and brought to their own classes, and input should be handled in there.
     def scroll_up(self):
-        """Function that should be called when the mousewheel is scrolled up, used for functionality in pose mode and the animation list."""
-        if ( self.is_animation_scroll ):
+        """Function that should be called when the mousewheel is scrolled up, used for functionality in pose mode and
+        the animation list."""
+        if self.is_animation_scroll:
             self.animation_scroll_list.scrollBy(-1)
-        elif ( self.is_posed and self.last_pose_frame != None ):
+        elif self.is_posed and self.last_pose_frame is not None:
             self.last_pose_frame += 1
             if self.last_pose_frame > self.actor.getNumFrames(self.current_animation):
                 self.last_pose_frame = 0
             self.actor.pose(self.current_animation, self.last_pose_frame)
 
     def scroll_down(self):
-        """Function that should be called when the mousewheel is scrolled down, used for functionality in pose mode and the animation list."""
-        if ( self.is_animation_scroll ):
+        """Function that should be called when the mousewheel is scrolled down, used for functionality in pose mode
+        and the animation list."""
+        if self.is_animation_scroll:
             self.animation_scroll_list.scrollBy(1)
-        elif ( self.is_posed and self.last_pose_frame != None ):
+        elif self.is_posed and self.last_pose_frame is not None:
             self.last_pose_frame -= 1
             if self.last_pose_frame < 0:
                 self.last_pose_frame = self.actor.getNumFrames(self.current_animation)
             self.actor.pose(self.current_animation, self.last_pose_frame)
-    
+
     def build_cog(self):
-        """Function that gets the name of the current cog and assembles/configures its based on paramaters defined in globals.py."""
-        # make sure the new actor is in the same place _ previous actor is removed
-        pos = 0
-        hpr = 0
-        if not self.actor == None:
-            pos = self.actor.get_pos()
-            hpr = self.actor.get_hpr()
+        """Function that gets the name of the current cog and assembles/configures its based on parameters defined in
+        globals.py.
+        """
+        # hide the shadow away while we work
+        self.shadow.reparent_to(hidden)
+        if self.actor is not None:
             self.actor.cleanup()
             self.actor.remove_node()
-        
-        body_path = ""
-        body_animations = {}
-        if ( globals.COG_DATA[self.current_cog]["suit"] == "a" ):
-            body_path = globals.SUIT_A_MODEL
-            body_animations = globals.SUIT_A_ANIMATION_DICT
-            self.available_animations = globals.SUIT_A_ANIMATIONS
-        elif ( globals.COG_DATA[self.current_cog]["suit"] == "b" ):
-            body_path = globals.SUIT_B_MODEL
-            body_animations = globals.SUIT_B_ANIMATION_DICT
-            self.available_animations = globals.SUIT_B_ANIMATIONS
-        else:
-            body_path = globals.SUIT_C_MODEL
-            body_animations = globals.SUIT_C_ANIMATION_DICT
-            self.available_animations = globals.SUIT_C_ANIMATIONS
+        actor_data = self.actors[self.index]
+        self.actor = actor_data.generate_actor()
+        if actor_data.has_shadow:
+            self.shadow.reparent_to(self.actor.find(actor_data.shadow_node))
 
-        self.animation_scroll_list.removeAndDestroyAllItems()
-        for i in self.available_animations:
-            if not i == "lose" and not i == "lose_zero":
-                # lose animations have their own body type and viewing them on the wrong model = unpleasant
-                new_button = DirectButton(text=i, 
-                                            text_scale=0.1, 
-                                            text_align = TextNode.ALeft, 
-                                            relief = None,
-                                            suppressMouse=False,
-                                            command=self.set_animation,
-                                            extraArgs=[i])
-                self.animation_scroll_list.addItem(new_button)
-
-        self.actor = Actor(body_path, body_animations)
-
-        self.shadow.reparent_to(self.actor.find('**/def_shadow'))
-
-        tx_blazer = loader.load_texture(globals.COG_DATA[self.current_cog]["blazer"])
-        self.actor.find('**/torso').set_texture(tx_blazer, 1)
-
-        tx_leg = loader.load_texture(globals.COG_DATA[self.current_cog]["leg"])
-        self.actor.find('**/legs').set_texture(tx_leg, 1)
-
-        tx_sleeve = loader.load_texture(globals.COG_DATA[self.current_cog]["sleeve"])
-        self.actor.find('**/arms').set_texture(tx_sleeve, 1)
-        
-        self.actor.find('**/hands').set_color(globals.COG_DATA[self.current_cog]["hands"])
-
-        medallion = globals.COG_DATA[self.current_cog]["emblem"]
-        chest_null = self.actor.find("**/def_joint_attachMeter")
-        icons = loader.load_model(globals.COG_ICONS)
-        corp_medallion = icons.find('**/' + medallion).copy_to(chest_null)
-        corp_medallion.set_pos_hpr_scale(*globals.COG_ICON_POS_HPR_SCALE)
-
-        head = loader.load_model(globals.COG_DATA[self.current_cog]["head"])
-        head.reparent_to(self.actor.find('**/def_head'))
-
-        self.actor.set_scale(globals.COG_DATA[self.current_cog]["scale"])
-
-        self.actor.set_pos(pos)
-        self.actor.set_hpr(hpr)
+        # disable posing
+        self.is_posed = False
 
         # match settings
         self.toggle_head(False)
         self.toggle_shadow(False)
         self.toggle_body(False)
-
         self.actor.reparent_to(render)
         self.actor.set_blend(frameBlend=self.is_blend)
-    
-    def cycle(self):
-        """Function that rotates to the next cog in the list of cogs defined in globals.py """
-        self.current_cog_index += 1
-        if ( self.current_cog_index >= len(self.cog_list) ):
-            self.current_cog_index = 0
-        self.current_cog = self.cog_list[self.current_cog_index]
+
+        # this is a little messy in the meantime but it'll be changed later
+        self.available_animations = list(self.actor.getAnimControlDict()['common']['modelRoot'].keys())
+        self.available_animations.sort()
+        self.animation_scroll_list.removeAndDestroyAllItems()
+        for i in self.available_animations:
+            if not i == "lose" and not i == "lose_zero":
+                # lose animations have their own body type and viewing them on the wrong model = unpleasant
+                new_button = DirectButton(text=i, text_scale=0.1, text_align=TextNode.ALeft, relief=None,
+                                          suppressMouse=False, command=self.set_animation, extraArgs=[i])
+                self.animation_scroll_list.addItem(new_button)
+
+    def cycle(self, is_left=False):
+        """Function that rotates to the next cog in the list of cogs defined in globals.py.
+
+         :param is_left: When false, the index will decrement rather than increment.
+         """
+        if is_left:
+            self.index -= 1
+            self.index = len(self.actors) - 1 if self.index < 0 else self.index
+        else:
+            self.index += 1
+            self.index = 0 if self.index == len(self.actors) else self.index
+        self.build_cog()
+
+    def switch_actor_set(self, name):
+        """Method that swaps out the set of actors we're cycling through."""
+        if name not in ACTORS.keys():
+            return
+        self.actors = ACTORS[name]
+        if self.index >= len(self.actors):
+            self.index = len(self.actors) - 1
         self.build_cog()
 
     def set_animation(self, animation):
@@ -220,6 +198,7 @@ class VisorView(ShowBase):
         # no more posing
         self.is_posed = False
 
+    # TODO: clean these up a little bit
     def toggle_pose(self):
         """Function that toggles pose mode on or off. Closes any open UI."""
         self.is_posed = not self.is_posed
@@ -242,7 +221,7 @@ class VisorView(ShowBase):
         :param boolean state: The desired state. Set to None by default, which will simply toggle the current state.
         """
 
-        if not state == None:
+        if not state is None:
             self.is_animation_scroll = state
         else:
             self.is_animation_scroll = not self.is_animation_scroll
@@ -297,7 +276,7 @@ class VisorView(ShowBase):
         self.toggle_head(False)
         self.toggle_shadow(False)
 
-    
+
 app = VisorView()
 app.render.set_antialias(AntialiasAttrib.MMultisample)
 app.run()

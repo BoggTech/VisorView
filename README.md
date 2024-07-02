@@ -18,18 +18,24 @@ You can run the program by double-clicking the provided .bat file in the `script
 
 ## Controls
 The following inputs are available:
-Key           | Action
-------------- | -------------
-Space         | Cycle between 5 different supervisor cogs (including Angry Foreman)
-S             | Toggle Shadow. The drop-shadow below the cog will be toggled on/off.
-Control+H     | Toggle Head. The cog's head will be toggled on/off.
-Control+B     | Toggle Body. The cog's body/suit will be toggled on/off.
-A             | View animation list. This list can be scrolled, and entries can be clicked to switch the active animation. **Some controls are disabled when this menu is open!**
-P             | Toggle Pose Mode. When pose mode is active, the cog's animation will pause, and the scrollwheel can be used to cycle through the animation's frames.
-B             | Toggle animation blending.
-f9            | Take screenshot. This will be stored to the `screenshots` directory by default.
-Control+Z     | Reset to default camera position, positioning it directly in front of the cog.
-Mousewheel    | Can be used with the animations menu or pose mode. See **p** and **a** controls for instructions.
+Key              | Action
+---------------- | -------------
+Space            | Cycle between current set of cogs.
+Left/Right Arrow | Ditto, but left arrow will allow you to back to a previous cog in the set.
+1                | Switch active set to Supervisors.
+2                | Switch active set to Sellbots.
+3                | Switch active set to Cashbots.
+4                | Switch active set to Lawbots.
+5                | Switch active set to Bossbots.
+S                | Toggle Shadow. The drop-shadow below the cog will be toggled on/off.
+Control+H        | Toggle Head. The cog's head will be toggled on/off.
+Control+B        | Toggle Body. The cog's body/suit will be toggled on/off.
+A                | View animation list. This list can be scrolled, and entries can be clicked to switch the active animation. **Some controls are disabled when this menu is open!**
+P                | Toggle Pose Mode. When pose mode is active, the cog's animation will pause, and the scrollwheel can be used to cycle through the animation's frames.
+B                | Toggle animation blending.
+F9               | Take screenshot. This will be stored to the `screenshots` directory by default.
+Control+Z        | Reset to default camera position, positioning it directly in front of the cog.
+Mousewheel       | Can be used with the animations menu or pose mode. See **p** and **a** controls for instructions.
 
 This program uses the default Panda3D camera controls. See the gif below for controlling the camera with your mouse.
 
