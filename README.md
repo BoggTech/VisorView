@@ -1,11 +1,9 @@
 # Visor-View
-Quick program I threw together for a friend, VisorView allows you to view, pose and screenshot animations on the Toontown Rewritten supervisor cogs.
+Originally a quick program I threw together for a friend, VisorView allows you to view, pose and screenshot animations on Toontown Rewritten cogs.
 
 # Usage
 ## Prerequisites
 Using this program assumes that you are aware of how to extract game assets from phase files and that you already have them ready before starting. If you're unfamiliar with this process, there is a [beginner's tutorial on the Toontown Rewritten wiki](https://toontownrewritten.wiki/Phase_files). This will also show you where to download the Panda3D SDK.
-
-**Please note** that, as of April 9th 2024, Under New Management has **not been released on the live servers**. Therefore, you will need a copy of the Under New Management playtest phase files to run the program.
 
 Please ensure you have [Python 3](https://www.python.org/downloads/) installed before continuing. As well as this, please ensure you have Panda3D installed as a python module by running `py -m pip install Panda3D` (replace py if you know you use a different alias, i.e. python3, python). 
 
@@ -53,10 +51,10 @@ Extract this into a folder of your choosing, and follow the steps outlined in **
 
 ## I did everything, but I'm having errors.
 
-Feel free to register a github account and write an [issue](https://github.com/BoggTech/VisorView/issues/new/choose). I'll try fix it if it's a problem, or guide you if it's not. You can also send me an email to my gloop.group address written on my GitHub profile.
+Feel free to register a github account and write an [issue](https://github.com/BoggTech/VisorView/issues/new/choose). I'll try fix it if it's a problem, or guide you if it's not.
 
 # Acknowledgements
 
-Special thanks to Panda3D and Python and their contributors. 
+Special thanks to Panda3D, Python and their contributors. 
 
 Toontown Online and Toontown Rewritten assets belong to their respective owners. Thank you to all of the artists and animators for their work on the cogs, as well as the rest of the Toontown team!
