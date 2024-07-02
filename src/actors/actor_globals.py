@@ -75,3 +75,5 @@ ACTORS = {"supervisors": SUPERVISORS,
           "lawbots": LAWBOTS,
           "bossbots": BOSSBOTS
           }
+
+COG_SET_NAMES = ["supervisors", "sellbots", "cashbots", "lawbots", "bossbots"]

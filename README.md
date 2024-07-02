@@ -20,6 +20,7 @@ Key              | Action
 ---------------- | -------------
 Space            | Cycle between current set of cogs.
 Left/Right Arrow | Ditto, but left arrow will allow you to back to a previous cog in the set.
+Up/Down Arrow    | Cycle through available cog sets.
 1                | Switch active set to Supervisors.
 2                | Switch active set to Sellbots.
 3                | Switch active set to Cashbots.

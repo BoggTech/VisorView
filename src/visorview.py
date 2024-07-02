@@ -8,7 +8,7 @@ from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
 from direct.gui.DirectGui import *
 from src.camera import Camera
-from src.actors.actor_globals import ACTORS
+from src.actors.actor_globals import ACTORS, COG_SET_NAMES
 
 resources = globals.RESOURCES_DIR
 if not os.path.exists(resources):
@@ -53,6 +53,7 @@ class VisorView(ShowBase):
 
         # initialize our actor
         self.actors = ACTORS["supervisors"]
+        self.cog_set_index = 0
         self.actor = None
         self.index = 0
         self.build_cog()
@@ -64,6 +65,8 @@ class VisorView(ShowBase):
         self.accept("space", self.cycle)
         self.accept("arrow_left", lambda: self.cycle(True))
         self.accept("arrow_right", lambda: self.cycle(False))
+        self.accept("arrow_up", lambda: self.cycle(False, True))
+        self.accept("arrow_down", lambda: self.cycle(True, True))
         self.accept("s", self.toggle_shadow)
         self.accept("control-b", self.toggle_body)
         self.accept("control-h", self.toggle_head)
@@ -168,11 +171,22 @@ class VisorView(ShowBase):
                                           suppressMouse=False, command=self.set_animation, extraArgs=[i])
                 self.animation_scroll_list.addItem(new_button)
 
-    def cycle(self, is_left=False):
+    def cycle(self, is_left=False, department=False):
         """Function that rotates to the next cog in the list of cogs defined in globals.py.
 
          :param is_left: When false, the index will decrement rather than increment.
+         :param department: When true, you will cycle through cog departments/sets rather than individual cogs.
          """
+        if department:
+            if is_left:
+                self.cog_set_index -= 1
+                self.cog_set_index = len(COG_SET_NAMES) - 1 if self.cog_set_index < 0 else self.cog_set_index
+            else:
+                self.cog_set_index += 1
+                self.cog_set_index = 0 if self.cog_set_index == len(COG_SET_NAMES) else self.cog_set_index
+            self.switch_actor_set(COG_SET_NAMES[self.cog_set_index])
+            return
+
         if is_left:
             self.index -= 1
             self.index = len(self.actors) - 1 if self.index < 0 else self.index
@@ -186,6 +200,7 @@ class VisorView(ShowBase):
         if name not in ACTORS.keys():
             return
         self.actors = ACTORS[name]
+        self.cog_set_index = COG_SET_NAMES.index(name)
         if self.index >= len(self.actors):
             self.index = len(self.actors) - 1
         self.build_cog()
