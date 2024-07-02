@@ -15,6 +15,7 @@ if not os.path.exists(resources):
     os.makedirs(resources)
     print("Please input Toontown Rewritten extracted phase files!")
 
+
 class VisorView(ShowBase):
     """ShowBase instance for VisorView."""
 
@@ -50,8 +51,8 @@ class VisorView(ShowBase):
         self.shadow.setColor(globals.SHADOW_COLOR)
         self.is_shadow = True
 
-
         # initialize our actor
+        self.actors = ACTORS["supervisors"]
         self.actor = None
         self.index = 0
         self.build_cog()
@@ -61,9 +62,16 @@ class VisorView(ShowBase):
 
         # we're initialized, time to accept input
         self.accept("space", self.cycle)
+        self.accept("arrow_left", lambda: self.cycle(True))
+        self.accept("arrow_right", lambda: self.cycle(False))
         self.accept("s", self.toggle_shadow)
         self.accept("control-b", self.toggle_body)
         self.accept("control-h", self.toggle_head)
+        self.accept("alt-z", lambda: self.switch_actor_set("supervisors"))
+        self.accept("alt-x", lambda: self.switch_actor_set("sellbots"))
+        self.accept("alt-c", lambda: self.switch_actor_set("cashbots"))
+        self.accept("alt-v", lambda: self.switch_actor_set("lawbots"))
+        self.accept("alt-b", lambda: self.switch_actor_set("bossbots"))
         self.accept("a", self.toggle_animation_scroll)
         self.accept("p", self.toggle_pose)
         self.accept("b", self.toggle_blend)
@@ -73,12 +81,13 @@ class VisorView(ShowBase):
         self.accept("wheel_down", self.scroll_down)
 
     def take_screenshot(self):
-        """Function that takes a screenshot of the ShowBase window and saves it to the screenshot directory as defined in globals.py."""
+        """Function that takes a screenshot of the ShowBase window and saves it to the screenshot directory as
+        defined in globals.py."""
         path = globals.SCREENSHOT_DIR
         if not os.path.exists(path):
             os.makedirs(path)
 
-        current_cog = ACTORS[self.index].get_name()
+        current_cog = self.actors[self.index].get_name()
 
         now = datetime.now()
         date_string = now.strftime("%d-%m-%Y-%H-%M-%S")
@@ -103,27 +112,29 @@ class VisorView(ShowBase):
 
     # TODO: GUI should be rewritten entirely and brought to their own classes, and input should be handled in there.
     def scroll_up(self):
-        """Function that should be called when the mousewheel is scrolled up, used for functionality in pose mode and the animation list."""
-        if (self.is_animation_scroll):
+        """Function that should be called when the mousewheel is scrolled up, used for functionality in pose mode and
+        the animation list."""
+        if self.is_animation_scroll:
             self.animation_scroll_list.scrollBy(-1)
-        elif (self.is_posed and self.last_pose_frame != None):
+        elif self.is_posed and self.last_pose_frame is not None:
             self.last_pose_frame += 1
             if self.last_pose_frame > self.actor.getNumFrames(self.current_animation):
                 self.last_pose_frame = 0
             self.actor.pose(self.current_animation, self.last_pose_frame)
 
     def scroll_down(self):
-        """Function that should be called when the mousewheel is scrolled down, used for functionality in pose mode and the animation list."""
-        if (self.is_animation_scroll):
+        """Function that should be called when the mousewheel is scrolled down, used for functionality in pose mode
+        and the animation list."""
+        if self.is_animation_scroll:
             self.animation_scroll_list.scrollBy(1)
-        elif (self.is_posed and self.last_pose_frame != None):
+        elif self.is_posed and self.last_pose_frame is not None:
             self.last_pose_frame -= 1
             if self.last_pose_frame < 0:
                 self.last_pose_frame = self.actor.getNumFrames(self.current_animation)
             self.actor.pose(self.current_animation, self.last_pose_frame)
 
     def build_cog(self):
-        """Function that gets the name of the current cog and assembles/configures its based on paramaters defined in
+        """Function that gets the name of the current cog and assembles/configures its based on parameters defined in
         globals.py.
         """
         # hide the shadow away while we work
@@ -131,7 +142,7 @@ class VisorView(ShowBase):
         if self.actor is not None:
             self.actor.cleanup()
             self.actor.remove_node()
-        actor_data = ACTORS[self.index]
+        actor_data = self.actors[self.index]
         self.actor = actor_data.generate_actor()
         if actor_data.has_shadow:
             self.shadow.reparent_to(self.actor.find(actor_data.shadow_node))
@@ -157,10 +168,25 @@ class VisorView(ShowBase):
                                           suppressMouse=False, command=self.set_animation, extraArgs=[i])
                 self.animation_scroll_list.addItem(new_button)
 
-    def cycle(self):
-        """Function that rotates to the next cog in the list of cogs defined in globals.py """
-        self.index += 1
-        self.index = 0 if self.index == len(ACTORS) else self.index
+    def cycle(self, is_left=False):
+        """Function that rotates to the next cog in the list of cogs defined in globals.py.
+
+         :param is_left: When false, the index will decrement rather than increment.
+         """
+        if is_left:
+            self.index -= 1
+            self.index = len(self.actors) - 1 if self.index < 0 else self.index
+        else:
+            self.index += 1
+            self.index = 0 if self.index == len(self.actors) else self.index
+        self.build_cog()
+
+    def switch_actor_set(self, name):
+        """Method that swaps out the set of actors we're cycling through."""
+        if name not in ACTORS.keys():
+            return
+        self.actors = ACTORS[name]
+        self.index = 0
         self.build_cog()
 
     def set_animation(self, animation):
@@ -171,6 +197,7 @@ class VisorView(ShowBase):
         # no more posing
         self.is_posed = False
 
+    # TODO: clean these up a little bit
     def toggle_pose(self):
         """Function that toggles pose mode on or off. Closes any open UI."""
         self.is_posed = not self.is_posed
@@ -193,7 +220,7 @@ class VisorView(ShowBase):
         :param boolean state: The desired state. Set to None by default, which will simply toggle the current state.
         """
 
-        if not state == None:
+        if not state is None:
             self.is_animation_scroll = state
         else:
             self.is_animation_scroll = not self.is_animation_scroll
