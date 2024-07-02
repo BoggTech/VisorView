@@ -1,11 +1,9 @@
 # Visor-View
-Quick program I threw together for a friend, VisorView allows you to view, pose and screenshot animations on the Toontown Rewritten supervisor cogs.
+Originally a quick program I threw together for a friend, VisorView allows you to view, pose and screenshot animations on Toontown Rewritten cogs.
 
 # Usage
 ## Prerequisites
 Using this program assumes that you are aware of how to extract game assets from phase files and that you already have them ready before starting. If you're unfamiliar with this process, there is a [beginner's tutorial on the Toontown Rewritten wiki](https://toontownrewritten.wiki/Phase_files). This will also show you where to download the Panda3D SDK.
-
-**Please note** that, as of April 9th 2024, Under New Management has **not been released on the live servers**. Therefore, you will need a copy of the Under New Management playtest phase files to run the program.
 
 Please ensure you have [Python 3](https://www.python.org/downloads/) installed before continuing. As well as this, please ensure you have Panda3D installed as a python module by running `py -m pip install Panda3D` (replace py if you know you use a different alias, i.e. python3, python). 
 
@@ -18,17 +16,25 @@ You can run the program by double-clicking the provided .bat file in the `script
 
 ## Controls
 The following inputs are available:
-Key           | Action
-------------- | -------------
-Space         | Cycle between 5 different supervisor cogs (including Angry Foreman)
-s             | Toggle Shadow. The drop-shadow below the cog will be toggled on/off.
-a             | View animation list. This list can be scrolled, and entries can be clicked to switch the active animation. **Some controls are disabled when this menu is open!**
-p             | Toggle Pose Mode. When pose mode is active, the cog's animation will pause, and the scrollwheel can be used to cycle through the animation's frames.
-b             | Toggle animation blending.
-r             | Reset the camera's roll. Roll is an axis of rotation. Think of it like turning the camera clockwise from its POV.
-f9            | Take screenshot. This will be stored to the `screenshots` directory by default.
-Control+Z     | Reset to default camera position, positioning it directly in front of the cog.
-Mousewheel    | Can be used with the animations menu or pose mode. See **p** and **a** controls for instructions.
+Key              | Action
+---------------- | -------------
+Space            | Cycle between current set of cogs.
+Left/Right Arrow | Ditto, but left arrow will allow you to back to a previous cog in the set.
+Up/Down Arrow    | Cycle through available cog sets.
+1                | Switch active set to Supervisors.
+2                | Switch active set to Sellbots.
+3                | Switch active set to Cashbots.
+4                | Switch active set to Lawbots.
+5                | Switch active set to Bossbots.
+S                | Toggle Shadow. The drop-shadow below the cog will be toggled on/off.
+Control+H        | Toggle Head. The cog's head will be toggled on/off.
+Control+B        | Toggle Body. The cog's body/suit will be toggled on/off.
+A                | View animation list. This list can be scrolled, and entries can be clicked to switch the active animation. **Some controls are disabled when this menu is open!**
+P                | Toggle Pose Mode. When pose mode is active, the cog's animation will pause, and the scrollwheel can be used to cycle through the animation's frames.
+B                | Toggle animation blending.
+F9               | Take screenshot. This will be stored to the `screenshots` directory by default.
+Control+Z        | Reset to default camera position, positioning it directly in front of the cog.
+Mousewheel       | Can be used with the animations menu or pose mode. See **p** and **a** controls for instructions.
 
 This program uses the default Panda3D camera controls. See the gif below for controlling the camera with your mouse.
 
@@ -46,10 +52,10 @@ Extract this into a folder of your choosing, and follow the steps outlined in **
 
 ## I did everything, but I'm having errors.
 
-Feel free to register a github account and write an [issue](https://github.com/BoggTech/VisorView/issues/new/choose). I'll try fix it if it's a problem, or guide you if it's not. You can also send me an email to my gloop.group address written on my GitHub profile.
+Feel free to register a github account and write an [issue](https://github.com/BoggTech/VisorView/issues/new/choose). I'll try fix it if it's a problem, or guide you if it's not.
 
 # Acknowledgements
 
-Special thanks to Panda3D and Python and their contributors. 
+Special thanks to Panda3D, Python and their contributors. 
 
 Toontown Online and Toontown Rewritten assets belong to their respective owners. Thank you to all of the artists and animators for their work on the cogs, as well as the rest of the Toontown team!
