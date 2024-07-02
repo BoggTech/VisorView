@@ -186,7 +186,8 @@ class VisorView(ShowBase):
         if name not in ACTORS.keys():
             return
         self.actors = ACTORS[name]
-        self.index = 0
+        if self.index >= len(self.actors):
+            self.index = len(self.actors) - 1
         self.build_cog()
 
     def set_animation(self, animation):
