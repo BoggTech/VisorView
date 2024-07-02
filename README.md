@@ -22,11 +22,11 @@ Key              | Action
 ---------------- | -------------
 Space            | Cycle between current set of cogs.
 Left/Right Arrow | Ditto, but left arrow will allow you to back to a previous cog in the set.
-Alt+Z            | Switch active set to Supervisors.
-Alt+X            | Switch active set to Sellbots.
-Alt+C            | Switch active set to Cashbots.
-Alt+V            | Switch active set to Lawbots.
-Alt+B            | Switch active set to Bossbots.
+1                | Switch active set to Supervisors.
+2                | Switch active set to Sellbots.
+3                | Switch active set to Cashbots.
+4                | Switch active set to Lawbots.
+5                | Switch active set to Bossbots.
 S                | Toggle Shadow. The drop-shadow below the cog will be toggled on/off.
 Control+H        | Toggle Head. The cog's head will be toggled on/off.
 Control+B        | Toggle Body. The cog's body/suit will be toggled on/off.
