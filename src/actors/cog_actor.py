@@ -1,6 +1,6 @@
 import os, glob
 import src.globals as globals
-from panda3d.core import Filename, Loader, Vec4
+from panda3d.core import Filename, Loader, Vec4, VBase4
 from direct.actor.Actor import Actor
 from src.actors.actor_base import ActorBase
 
@@ -18,6 +18,8 @@ DEPARTMENT_NAME_DICT = {"sell": "s", "cash": "m", "law": "l", "boss": "c"}
 MEDALLION_NAME_DICT = {"sell": "SalesIcon", "cash": "MoneyIcon", "law": "LegalIcon", "boss": "CorpIcon"}
 SUPERVISOR_NAME_DICT = {"sell": "sellbotForeman", "cash": "cashbotAuditor", "law": "lawbotClerk",
                         "boss": "bossbotClubPresident"}
+DEPARTMENT_HAND_DICT = {"sell": VBase4(0.95, 0.75, 0.95, 1.0), "cash": VBase4(0.65, 0.95, 0.85, 1.0),
+                        "law": VBase4(0.75, 0.75, 0.95, 1.0), "boss": VBase4(0.95, 0.75, 0.75, 1.0)}
 
 COG_ICONS = Filename(globals.RESOURCES_DIR + "/phase_3/models/gui/ttr_m_gui_gen_cogIcons.bam")
 COG_ICON_POS_HPR_SCALE = (0.02, 0.05, 0.04,
@@ -58,7 +60,7 @@ class CogActor(ActorBase):
     has_shadow = True
     shadow_node = "**/def_shadow"
 
-    def __init__(self, name, department, suit_type, scale, hand_color, head_path=None, head_nodes=None,
+    def __init__(self, name, department, suit_type, scale, hand_color=None, head_path=None, head_nodes=None,
                  head_color=None, head_texture=None, is_supervisor=False):
         """Initializes the CogActor instance.
 
@@ -66,13 +68,17 @@ class CogActor(ActorBase):
         :param department: The department of the cog (sell, cash, law or boss)
         :param suit_type: The suit type of the cog (a, b or c).
         :param scale: The scale of the cog.
-        :param hand_color: The hand color of the cog.
+        :param hand_color: The hand color of the cog. Has defaults based on department.
         :param head_path: The path to the head of the cog. Defaults to default model for the suit type.
+        :param head_nodes: The node(s) to show for the head. Can be a string or list of strings. "*" by default.
+        :param head_color: The color of the head. Not applied by default.
+        :param is_supervisor: If the cog should use supervisor suit textures or not. Defaults to False.
         """
         super().__init__()
         head_nodes = ["*"] if head_nodes is None else head_nodes
         head_nodes = [head_nodes] if not isinstance(head_nodes, list) else head_nodes
         head_path = SUIT_HEAD_DICT[suit_type] + "heads.bam" if head_path is None else head_path
+        hand_color = DEPARTMENT_HAND_DICT[department] if hand_color is None else hand_color
         self.set_name(name)
         self.add_data("department", department)
         self.add_data("suit_type", suit_type)
