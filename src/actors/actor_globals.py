@@ -28,7 +28,9 @@ SELLBOTS = [
     CogActor("Mover & Shaker", "sell", "b", 4.75 / B_SIZE, SELL_HANDS, head_nodes="**/movershaker", ),
     CogActor("Two-Face", "sell", "a", 5.25 / A_SIZE, SELL_HANDS, head_nodes="**/twoface", ),
     CogActor("The Mingler", "sell", "a", 5.75 / A_SIZE, SELL_HANDS, head_nodes="**/twoface", head_texture=HEAD_PREFIX_4 + "mingler.jpg"),
-    CogActor("Mr. Hollywood", "sell", "a", 7.0 / A_SIZE, SELL_HANDS, head_nodes="**/yesman")
+    CogActor("Mr. Hollywood", "sell", "a", 7.0 / A_SIZE, SELL_HANDS, head_nodes="**/yesman"),
+    SUPERVISORS[0],  # foreman (neutral)
+    SUPERVISORS[1]   # foreman (angry)
 ]
 
 CASHBOTS = [
@@ -39,7 +41,8 @@ CASHBOTS = [
     CogActor('Number Cruncher', 'cash', 'a', 5.25 / A_SIZE, CASH_HANDS, head_nodes='**/numbercruncher'),
     CogActor('Money Bags', 'cash', 'c', 5.3 / C_SIZE, CASH_HANDS, head_nodes='**/moneybags'),
     CogActor('Loan Shark', 'cash', 'b', 6.5 / B_SIZE, VBase4(0.5, 0.85, 0.75, 1.0), head_nodes='**/loanshark'),
-    CogActor('Robber Baron', 'cash', 'a', 7.0 / A_SIZE, CASH_HANDS, head_nodes='**/yesman', head_texture=HEAD_PREFIX_4 + 'robber-baron.jpg')
+    CogActor('Robber Baron', 'cash', 'a', 7.0 / A_SIZE, CASH_HANDS, head_nodes='**/yesman', head_texture=HEAD_PREFIX_4 + 'robber-baron.jpg'),
+    SUPERVISORS[2]  # auditor
 ]
 
 LAWBOTS = [
@@ -50,7 +53,8 @@ LAWBOTS = [
     CogActor('Back Stabber', 'law', 'a', 4.5 / A_SIZE, LAW_HANDS, head_nodes='**/backstabber'),
     CogActor('Spin Doctor', 'law', 'b', 5.65 / B_SIZE, VBase4(0.5, 0.8, 0.75, 1.0), head_nodes='**/telemarketer', head_texture=HEAD_PREFIX_4 + 'spin-doctor.jpg'),
     CogActor('Legal Eagle', 'law', 'a', 7.125 / A_SIZE, VBase4(0.25, 0.25, 0.5, 1.0), head_nodes='**/legaleagle'),
-    CogActor('Big Wig', 'law', 'a', 7.0 / A_SIZE, LAW_HANDS, head_nodes='**/bigwig')
+    CogActor('Big Wig', 'law', 'a', 7.0 / A_SIZE, LAW_HANDS, head_nodes='**/bigwig'),
+    SUPERVISORS[3]  # clerk
 ]
 
 BOSSBOTS = [
@@ -61,7 +65,8 @@ BOSSBOTS = [
     CogActor('Downsizer', 'boss', 'b', 4.5 / B_SIZE, BOSS_HANDS, head_nodes='**/beancounter'),
     CogActor('Head Hunter', 'boss', 'a', 6.5 / A_SIZE, BOSS_HANDS, head_nodes='**/headhunter'),
     CogActor('Corporate Raider', 'boss', 'c', 6.75 / C_SIZE, VBase4(0.85, 0.55, 0.55, 1.0), head_nodes='**/flunky', head_texture=HEAD_PREFIX_3_5 + 'corporate-raider.jpg'),
-    CogActor('The Big Cheese', 'boss', 'a', 7.0 / A_SIZE, VBase4(0.75, 0.95, 0.75, 1.0), head_nodes='**/bigcheese')
+    CogActor('The Big Cheese', 'boss', 'a', 7.0 / A_SIZE, VBase4(0.75, 0.95, 0.75, 1.0), head_nodes='**/bigcheese'),
+    SUPERVISORS[4]  # club president
 ]
 
 ACTORS = {"supervisors": SUPERVISORS,
