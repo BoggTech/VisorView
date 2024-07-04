@@ -150,8 +150,9 @@ class VisorView(ShowBase):
         if actor_data.has_shadow:
             self.shadow.reparent_to(self.actor.find(actor_data.shadow_node))
 
-        # disable posing
+        # disable posing + clear anim
         self.is_posed = False
+        self.set_animation(None)
 
         # match settings
         self.toggle_head(False)
