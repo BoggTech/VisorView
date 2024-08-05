@@ -1,20 +1,13 @@
-import src.globals as globals
+import src.globals.visorview_globals as globals
 
 import os
 from datetime import datetime
-from panda3d.core import AntialiasAttrib, Loader
+from panda3d.core import AntialiasAttrib
 from panda3d.core import TextNode
 from direct.showbase.ShowBase import ShowBase
-from direct.actor.Actor import Actor
 from direct.gui.DirectGui import *
-from src.camera import Camera
-from src.actors.actor_globals import ACTORS, COG_SET_NAMES
-
-resources = globals.RESOURCES_DIR
-if not os.path.exists(resources):
-    os.makedirs(resources)
-    print("Please input Toontown Rewritten extracted phase files!")
-
+from src.util.camera import Camera
+from src.globals.actor_globals import ACTORS, COG_SET_NAMES
 
 class VisorView(ShowBase):
     """ShowBase instance for VisorView."""
@@ -85,7 +78,7 @@ class VisorView(ShowBase):
 
     def take_screenshot(self):
         """Function that takes a screenshot of the ShowBase window and saves it to the screenshot directory as
-        defined in globals.py."""
+        defined in visorview_globals.py."""
         path = globals.SCREENSHOT_DIR
         if not os.path.exists(path):
             os.makedirs(path)
@@ -106,11 +99,11 @@ class VisorView(ShowBase):
         self.camera_controller.disable()
 
     def reset_actor_pos(self):
-        """Resets the position of the actor to default as defined in globals.py."""
+        """Resets the position of the actor to default as defined in visorview_globals.py."""
         self.actor.set_pos_hpr(*globals.DEFAULT_POS, *globals.DEFAULT_HPR)
 
     def reset_camera_pos(self):
-        """Resets the position of the camera to default as defined in globals.py."""
+        """Resets the position of the camera to default as defined in visorview_globals.py."""
         self.camera_controller.reset_position()
 
     # TODO: GUI should be rewritten entirely and brought to their own classes, and input should be handled in there.
@@ -138,7 +131,7 @@ class VisorView(ShowBase):
 
     def build_cog(self):
         """Function that gets the name of the current cog and assembles/configures its based on parameters defined in
-        globals.py.
+        visorview_globals.py.
         """
         # hide the shadow away while we work
         self.shadow.reparent_to(hidden)
@@ -173,7 +166,7 @@ class VisorView(ShowBase):
                 self.animation_scroll_list.addItem(new_button)
 
     def cycle(self, is_left=False, department=False):
-        """Function that rotates to the next cog in the list of cogs defined in globals.py.
+        """Function that rotates to the next cog in the list of cogs defined in visorview_globals.py.
 
          :param is_left: When false, the index will decrement rather than increment.
          :param department: When true, you will cycle through cog departments/sets rather than individual cogs.
