@@ -17,7 +17,7 @@ result = askquestion(title="Visorview",
 if not result == 'yes':
     sys.exit(0)
 
-phase_files = ("3.5", "3", "4", "5", "5.5", "6", "7", "8", "9", "10", "11", "12", "13", "14")
+phase_files = ("3", "3.5", "4")
 vfs = VirtualFileSystem.get_global_ptr()
 
 while True:
