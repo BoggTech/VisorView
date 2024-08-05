@@ -1,4 +1,5 @@
 import sys
+from os.path import expanduser
 from platform import system
 
 # Load config - must happen before any other Panda3D import
@@ -14,10 +15,11 @@ from tkinter.filedialog import askdirectory
 
 # Mount phase files
 user_system = system()
+home_dir = Filename(expanduser("~"))
 DEFAULT_INSTALL_PATHS = {
-    "Linux": Filename("~/.var/app/com.toontownrewritten.Launcher/data"),
+    "Linux": home_dir / Filename(".var/app/com.toontownrewritten.Launcher/data"),
     "Windows": Filename("/c/Program Files (x86)/Toontown Rewritten"),
-    "Darwin": Filename("~/Library/Application Support/Toontown Rewritten")  # TODO: mac
+    "Darwin": home_dir / Filename("Library/Application Support/Toontown Rewritten")
 }
 default_path = DEFAULT_INSTALL_PATHS[user_system]
 
