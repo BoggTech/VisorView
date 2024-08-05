@@ -3,16 +3,12 @@ Originally a quick program I threw together for a friend, VisorView allows you t
 
 # Usage
 ## Prerequisites
-Using this program assumes that you are aware of how to extract game assets from phase files and that you already have them ready before starting. If you're unfamiliar with this process, there is a [beginner's tutorial on the Toontown Rewritten wiki](https://toontownrewritten.wiki/Phase_files). This will also show you where to download the Panda3D SDK.
-
 Please ensure you have [Python 3](https://www.python.org/downloads/) installed before continuing. As well as this, please ensure you have Panda3D installed as a python module by running `py -m pip install Panda3D` (replace py if you know you use a different alias, i.e. python3, python). 
 
 This command should be run in your **terminal**, if you use Linux, or your **command prompt** if you use Windows. The command prompt can be accessed by accessing the run dialog (Ctrl + R) and typing `cmd.exe`.
 
 ## Running
-Before running, take your extracted phase files (You should have these from the prerequisites section) and put them in the `resources` folder in the root directory (the same folder that `src` folder is in). If this directory doesn't exist, you can make it yourself, or run the program once to generate it automatically.
-
-You can run the program by double-clicking the provided .bat file in the `scripts` directory (on windows) or by running `py main.py`, from the main directory, in your terminal/command prompt. Provided everything is in place, you should be greeted with a graphics window displaying a t-posing cog. If there are any errors, make sure you put **all** of the phase files in the resources folder.
+You can run the program by double-clicking the provided .bat file in the `scripts` directory (on windows) or by running `py main.py`, from the main directory, in your terminal/command prompt. You should be greeted with a graphics window displaying a t-posing cog.
 
 ## Controls
 The following inputs are available:
