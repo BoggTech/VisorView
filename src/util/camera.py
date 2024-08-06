@@ -1,6 +1,6 @@
 from panda3d.core import WindowProperties, NodePath
 from direct.task import Task
-import src.globals as globals
+import src.globals.visorview_globals as globals
 
 RELATIVE_CAMERA_TASK_PRIORITY = 2                  # Camera reset must be higher so it runs last
 DEFAULT_CAMERA_TASK_PRIORITY = 1                   # Therefore, use this for anything else.
@@ -47,7 +47,7 @@ class Camera(NodePath):
         self.end_controls()
 
     def reset_position(self):
-        """Reset the camera and parent node to their default positions as defined in globals.py."""
+        """Reset the camera and parent node to their default positions as defined in visorview_globals.py."""
         self.set_pos_hpr(*globals.DEFAULT_CAMERA_NODE_POS, 0, 0, 0)
         camera.set_pos(globals.DEFAULT_CAMERA_POS)
 

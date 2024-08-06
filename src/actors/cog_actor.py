@@ -1,16 +1,17 @@
-import os, glob
-import src.globals as globals
-from panda3d.core import Filename, Loader, Vec4, VBase4
+import os
+import posixpath
+import src.util.vfs_glob as glob
+from panda3d.core import Filename, Vec4, VBase4
 from direct.actor.Actor import Actor
 from src.actors.actor_base import ActorBase
 
-SUIT_MODELS = {"a": Filename(globals.RESOURCES_DIR + "/phase_3.5/models/char/tt_a_ene_cga_zero.bam"),
-               "b": Filename(globals.RESOURCES_DIR + "/phase_3.5/models/char/tt_a_ene_cgb_zero.bam"),
-               "c": Filename(globals.RESOURCES_DIR + "/phase_3.5/models/char/tt_a_ene_cgc_zero.bam")}
+SUIT_MODELS = {"a": Filename("phase_3.5/models/char/tt_a_ene_cga_zero.bam"),
+               "b": Filename("phase_3.5/models/char/tt_a_ene_cgb_zero.bam"),
+               "c": Filename("phase_3.5/models/char/tt_a_ene_cgc_zero.bam")}
 
-SUIT_HEAD_DICT = {"a": Filename(globals.RESOURCES_DIR + "/phase_4/models/char/suitA-"),
-                  "b": Filename(globals.RESOURCES_DIR + "/phase_4/models/char/suitB-"),
-                  "c": Filename(globals.RESOURCES_DIR + "/phase_3.5/models/char/suitC-"),
+SUIT_HEAD_DICT = {"a": Filename("phase_4/models/char/suitA-"),
+                  "b": Filename("phase_4/models/char/suitB-"),
+                  "c": Filename("phase_3.5/models/char/suitC-"),
                   }
 
 DEPARTMENTS = ("sell", "cash", "law", "boss")
@@ -21,7 +22,7 @@ SUPERVISOR_NAME_DICT = {"sell": "sellbotForeman", "cash": "cashbotAuditor", "law
 DEPARTMENT_HAND_DICT = {"sell": VBase4(0.95, 0.75, 0.95, 1.0), "cash": VBase4(0.65, 0.95, 0.85, 1.0),
                         "law": VBase4(0.75, 0.75, 0.95, 1.0), "boss": VBase4(0.95, 0.75, 0.75, 1.0)}
 
-COG_ICONS = Filename(globals.RESOURCES_DIR + "/phase_3/models/gui/ttr_m_gui_gen_cogIcons.bam")
+COG_ICONS = Filename("phase_3/models/gui/ttr_m_gui_gen_cogIcons.bam")
 COG_ICON_POS_HPR_SCALE = (0.02, 0.05, 0.04,
                           180.00, 0.00, 0.00,
                           0.51, 0.51, 0.51)
@@ -33,9 +34,9 @@ MEDALLION_COLORS = {
     'cash': Vec4(0.749, 0.769, 0.749, 1.000),
 }
 
-SUIT_ANIMATION_PATHS = {"a": glob.glob(os.path.join(globals.RESOURCES_DIR, "**", "tt_a_ene_cga_*.bam"), recursive=True),
-                        "b": glob.glob(os.path.join(globals.RESOURCES_DIR, "**", "tt_a_ene_cgb_*.bam"), recursive=True),
-                        "c": glob.glob(os.path.join(globals.RESOURCES_DIR, "**", "tt_a_ene_cgc_*.bam"), recursive=True)}
+SUIT_ANIMATION_PATHS = {"a": glob.glob(posixpath.join("phase_*", "models", "char", "tt_a_ene_cga_*.bam")),
+                        "b": glob.glob(posixpath.join("phase_*", "models", "char", "tt_a_ene_cgb_*.bam")),
+                        "c": glob.glob(posixpath.join("phase_*", "models", "char", "tt_a_ene_cgc_*.bam"))}
 
 SUIT_ANIMATION_DICTS = {"a": {}, "b": {}, "c": {}}
 
@@ -101,16 +102,16 @@ class CogActor(ActorBase):
             return None
 
         if is_supervisor:
-            prefix = "/phase_3.5/maps/ttr_t_ene_"
+            prefix = "phase_3.5/maps/ttr_t_ene_"
             abbr = SUPERVISOR_NAME_DICT[department]
         else:
-            prefix = "/phase_3.5/maps/"
+            prefix = "phase_3.5/maps/"
             abbr = DEPARTMENT_NAME_DICT[department]
 
-        texture_dict = {"arm": Filename(globals.RESOURCES_DIR + prefix + abbr + "_arm.jpg"),
-                        "blazer": Filename(globals.RESOURCES_DIR + prefix + abbr + "_blazer.jpg"),
-                        "leg": Filename(globals.RESOURCES_DIR + prefix + abbr + "_leg.jpg"),
-                        "sleeve": Filename(globals.RESOURCES_DIR + prefix + abbr + "_sleeve.jpg")}
+        texture_dict = {"arm": Filename(prefix + abbr + "_arm.jpg"),
+                        "blazer": Filename(prefix + abbr + "_blazer.jpg"),
+                        "leg": Filename(prefix + abbr + "_leg.jpg"),
+                        "sleeve": Filename(prefix + abbr + "_sleeve.jpg")}
 
         return texture_dict
 
