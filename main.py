@@ -1,14 +1,13 @@
 import sys
+import os
 from os.path import expanduser
 from platform import system
-
 # Load config - must happen before any other Panda3D import
 from panda3d.core import loadPrcFile
 
 loadPrcFile("VisorConfig.prc")
 
 from panda3d.core import VirtualFileSystem
-from panda3d.core import Multifile
 from panda3d.core import Filename
 from tkinter.messagebox import askquestion
 from tkinter.filedialog import askdirectory
@@ -26,11 +25,19 @@ default_path = DEFAULT_INSTALL_PATHS[user_system]
 PHASE_FILES = ("3.5", "3", "4", "5", "5.5", "6", "7", "8", "9", "10", "11", "12", "13", "14")
 vfs = VirtualFileSystem.get_global_ptr()
 
-phase_file_dir = default_path
+if os.path.exists("TTR_INSTALL_PATH"):
+    f = open("TTR_INSTALL_PATH", "r")
+    phase_file_dir = Filename(f.read())
+    f.close()
+else:
+    phase_file_dir = default_path
+
 while True:
     for canon in PHASE_FILES:
         is_success = vfs.mount(phase_file_dir / Filename("phase_" + canon + ".mf"), ".", VirtualFileSystem.MF_read_only)
         if not is_success:
+            # well this lied.
+            os.remove("TTR_INSTALL_PATH")
             break
     if not is_success:
         result = askquestion(title="Visorview",
@@ -42,6 +49,12 @@ while True:
         phase_file_dir = Filename.from_os_specific(askdirectory(title='Select Folder'))
     else:
         break
+
+# check if we have to save the path
+if not os.path.exists("TTR_INSTALL_PATH"):
+    f = open("TTR_INSTALL_PATH", "w")
+    f.write(str(phase_file_dir))
+    f.close()
 
 print(phase_file_dir)
 
