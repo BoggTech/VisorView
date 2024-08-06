@@ -23,7 +23,7 @@ DEFAULT_INSTALL_PATHS = {
 }
 default_path = DEFAULT_INSTALL_PATHS[user_system]
 
-PHASE_FILES = ("3", "3.5", "4")
+phase_files = ("3.5", "3", "4", "5", "5.5", "6", "7", "8", "9", "10", "11", "12", "13", "14")
 vfs = VirtualFileSystem.get_global_ptr()
 
 phase_file_dir = default_path
