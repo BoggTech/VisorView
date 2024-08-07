@@ -1,9 +1,10 @@
 from direct.actor.Actor import Actor
 
-class ActorBase:
+class ActorData:
     """Base class for VisorView actors. These do not store the actor at any point, rather, store information on how
     to generate them at any given moment, as well as a method to do just that.
     """
+    actor_type = ""
     has_shadow = False
     shadow_node = ""
 
@@ -30,4 +31,11 @@ class ActorBase:
 
     def generate_actor(self):
         """Returns an actor based on the data within this class."""
-        return Actor()
+        pass
+
+    def get_animation_names(self):
+        """Returns a list of valid animations for the actor."""
+        pass
+
+    def get_type(self):
+        return self.actor_type
