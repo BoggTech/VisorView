@@ -3,7 +3,7 @@ import posixpath
 import src.util.vfs_glob as glob
 from panda3d.core import Filename, Vec4, VBase4
 from direct.actor.Actor import Actor
-from src.actors.actor_base import ActorBase
+from src.actors.actor_data import ActorData
 
 SUIT_MODELS = {"a": Filename("phase_3.5/models/char/tt_a_ene_cga_zero.bam"),
                "b": Filename("phase_3.5/models/char/tt_a_ene_cgb_zero.bam"),
@@ -56,8 +56,9 @@ SUIT_ANIMATIONS = {"a": list(SUIT_ANIMATION_DICTS["a"]),
 [SUIT_ANIMATIONS[x].sort() for x in SUIT_ANIMATIONS.keys()]
 
 
-class CogActor(ActorBase):
+class CogActorData(ActorData):
     """Class that stores data for and generates Toontown Rewritten cog actors."""
+    actor_type = "cog"
     has_shadow = True
     shadow_node = "**/def_shadow"
 
@@ -115,7 +116,7 @@ class CogActor(ActorBase):
 
         return texture_dict
 
-    def get_animations(self):
+    def get_animation_names(self):
         """Returns a list of animation names for this actor."""
         suit_type = self.get_data("suit_type")
         return None if suit_type is None else SUIT_ANIMATIONS[suit_type]

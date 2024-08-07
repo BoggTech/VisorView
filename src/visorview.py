@@ -1,4 +1,4 @@
-import src.globals.visorview_globals as globals
+import src.globals.visorview_globals as visorview_globals
 
 import os
 from datetime import datetime
@@ -7,7 +7,9 @@ from panda3d.core import TextNode
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.DirectGui import *
 from src.util.camera import Camera
+from src.actors.actor_manager import ActorManager
 from src.globals.actor_globals import ACTORS, COG_SET_NAMES
+
 
 class VisorView(ShowBase):
     """ShowBase instance for VisorView."""
@@ -28,30 +30,14 @@ class VisorView(ShowBase):
         self.available_animations = []
         self.is_animation_scroll = False
 
-        # initialize various states
-        self.is_head = True
-        self.is_body = True
-        self.is_blend = True
-
-        # initialize pose mode
-        self.is_posed = False
-        self.current_animation = None
-        self.last_pose_frame = 0
-
-        # initialize shadow to be used by the actor
-        self.shadow = loader.loadModel(globals.SHADOW_MODEL)
-        self.shadow.setScale(globals.SHADOW_SCALE)
-        self.shadow.setColor(globals.SHADOW_COLOR)
-        self.is_shadow = True
-
         # initialize our actor
         self.actors = ACTORS["supervisors"]
         self.cog_set_index = 0
-        self.actor = None
+        self.actor = ActorManager()
+        self.actor.reparent_to(render)
         self.index = 0
         self.build_cog()
 
-        self.reset_actor_pos()
         self.reset_camera_pos()
 
         # we're initialized, time to accept input
@@ -60,17 +46,17 @@ class VisorView(ShowBase):
         self.accept("arrow_right", lambda: self.cycle(False))
         self.accept("arrow_up", lambda: self.cycle(False, True))
         self.accept("arrow_down", lambda: self.cycle(True, True))
-        self.accept("s", self.toggle_shadow)
-        self.accept("control-b", self.toggle_body)
-        self.accept("control-h", self.toggle_head)
+        self.accept("s", self.actor.toggle_shadow_visibility)
+        self.accept("control-b", self.actor.toggle_body_visibility)
+        self.accept("control-h", self.actor.toggle_head_visibility)
         self.accept("1", lambda: self.switch_actor_set("supervisors"))
         self.accept("2", lambda: self.switch_actor_set("sellbots"))
         self.accept("3", lambda: self.switch_actor_set("cashbots"))
         self.accept("4", lambda: self.switch_actor_set("lawbots"))
         self.accept("5", lambda: self.switch_actor_set("bossbots"))
         self.accept("a", self.toggle_animation_scroll)
-        self.accept("p", self.toggle_pose)
-        self.accept("b", self.toggle_blend)
+        self.accept("p", self.actor.toggle_posed)
+        self.accept("b", self.actor.toggle_animation_smoothing)
         self.accept("f9", self.take_screenshot)
         self.accept("control-z", self.reset_camera_pos)
         self.accept("wheel_up", self.scroll_up)
@@ -79,7 +65,7 @@ class VisorView(ShowBase):
     def take_screenshot(self):
         """Function that takes a screenshot of the ShowBase window and saves it to the screenshot directory as
         defined in visorview_globals.py."""
-        path = globals.SCREENSHOT_DIR
+        path = visorview_globals.SCREENSHOT_DIR
         if not os.path.exists(path):
             os.makedirs(path)
 
@@ -98,10 +84,6 @@ class VisorView(ShowBase):
         """Disables movement of the camera via the mouse."""
         self.camera_controller.disable()
 
-    def reset_actor_pos(self):
-        """Resets the position of the actor to default as defined in visorview_globals.py."""
-        self.actor.set_pos_hpr(*globals.DEFAULT_POS, *globals.DEFAULT_HPR)
-
     def reset_camera_pos(self):
         """Resets the position of the camera to default as defined in visorview_globals.py."""
         self.camera_controller.reset_position()
@@ -112,57 +94,30 @@ class VisorView(ShowBase):
         the animation list."""
         if self.is_animation_scroll:
             self.animation_scroll_list.scrollBy(-1)
-        elif self.is_posed and self.last_pose_frame is not None:
-            self.last_pose_frame += 1
-            if self.last_pose_frame > self.actor.getNumFrames(self.current_animation):
-                self.last_pose_frame = 0
-            self.actor.pose(self.current_animation, self.last_pose_frame)
+        elif self.actor.is_posed():
+            self.actor.increment_pose(1)
 
     def scroll_down(self):
         """Function that should be called when the mousewheel is scrolled down, used for functionality in pose mode
         and the animation list."""
         if self.is_animation_scroll:
             self.animation_scroll_list.scrollBy(1)
-        elif self.is_posed and self.last_pose_frame is not None:
-            self.last_pose_frame -= 1
-            if self.last_pose_frame < 0:
-                self.last_pose_frame = self.actor.getNumFrames(self.current_animation)
-            self.actor.pose(self.current_animation, self.last_pose_frame)
+        elif self.actor.is_posed():
+            self.actor.increment_pose(-1)
 
     def build_cog(self):
         """Function that gets the name of the current cog and assembles/configures its based on parameters defined in
         visorview_globals.py.
         """
-        # hide the shadow away while we work
-        self.shadow.reparent_to(hidden)
-        if self.actor is not None:
-            self.actor.cleanup()
-            self.actor.remove_node()
-        actor_data = self.actors[self.index]
-        self.actor = actor_data.generate_actor()
-        if actor_data.has_shadow:
-            self.shadow.reparent_to(self.actor.find(actor_data.shadow_node))
-
-        # disable posing + clear anim
-        self.is_posed = False
-        self.set_animation(None)
-
-        # match settings
-        self.toggle_head(False)
-        self.toggle_shadow(False)
-        self.toggle_body(False)
-        self.actor.reparent_to(render)
-        self.actor.set_blend(frameBlend=self.is_blend)
-
-        # this is a little messy in the meantime but it'll be changed later
-        self.available_animations = list(self.actor.getAnimControlDict()['common']['modelRoot'].keys())
+        self.actor.set_actor_data(self.actors[self.index])
+        self.available_animations = self.actor.get_actor_animations()
         self.available_animations.sort()
         self.animation_scroll_list.removeAndDestroyAllItems()
         for i in self.available_animations:
             if not i == "lose" and not i == "lose_zero":
                 # lose animations have their own body type and viewing them on the wrong model = unpleasant
                 new_button = DirectButton(text=i, text_scale=0.1, text_align=TextNode.ALeft, relief=None,
-                                          suppressMouse=False, command=self.set_animation, extraArgs=[i])
+                                          suppressMouse=False, command=self.actor.animate, extraArgs=[i])
                 self.animation_scroll_list.addItem(new_button)
 
     def cycle(self, is_left=False, department=False):
@@ -199,38 +154,12 @@ class VisorView(ShowBase):
             self.index = len(self.actors) - 1
         self.build_cog()
 
-    def set_animation(self, animation):
-        """Function that switches the actors currently playing animation."""
-        self.current_animation = animation
-        self.actor.loop(animation)
-
-        # no more posing
-        self.is_posed = False
-
-    # TODO: clean these up a little bit
-    def toggle_pose(self):
-        """Function that toggles pose mode on or off. Closes any open UI."""
-        self.is_posed = not self.is_posed
-        if self.is_posed:
-            # if the scroll is open, toggle it
-            self.toggle_animation_scroll(False)
-            self.last_pose_frame = self.actor.getCurrentFrame()
-            self.actor.pose(self.current_animation, self.last_pose_frame)
-        else:
-            self.actor.loop(self.current_animation)
-
-    def toggle_blend(self):
-        """Function that toggles animation blending on the actor."""
-        self.is_blend = not self.is_blend
-        self.actor.setBlend(frameBlend=self.is_blend)
-
     def toggle_animation_scroll(self, state=None):
         """Function that toggles the animation scroll list. Mouse controls are disabled when its open.
 
         :param boolean state: The desired state. Set to None by default, which will simply toggle the current state.
         """
-
-        if not state is None:
+        if state is not None:
             self.is_animation_scroll = state
         else:
             self.is_animation_scroll = not self.is_animation_scroll
@@ -241,49 +170,6 @@ class VisorView(ShowBase):
         else:
             self.animation_scroll_list.hide()
             self.enable_mouse_cam()
-
-    def toggle_shadow(self, update_state=True):
-        """Function that toggles the actor's shadow visibility.
-
-        :param boolean update_state: True by default, if False it will not toggle the current state.
-        """
-        if update_state:
-            self.is_shadow = not self.is_shadow
-
-        if self.is_shadow:
-            self.shadow.show_through()
-        else:
-            self.shadow.hide()
-
-    def toggle_head(self, update_state=True):
-        """Function that toggles the actor's head visibility.
-        
-        :param boolean update_state: True by default, if False it will not toggle the current state.
-        """
-        if update_state:
-            self.is_head = not self.is_head
-
-        if self.is_head:
-            self.actor.find('**/def_head').show_through()
-        else:
-            self.actor.find('**/def_head').hide()
-
-    def toggle_body(self, update_state=True):
-        """Function that toggles the actor's body visibility.
-
-        :param boolean update_state: True by default, if False it will not toggle the current state.
-        """
-        if update_state:
-            self.is_body = not self.is_body
-
-        if self.is_body:
-            self.actor.show_through()
-        else:
-            self.actor.hide()
-
-        # make sure the children are shown/hidden if they need to be
-        self.toggle_head(False)
-        self.toggle_shadow(False)
 
 
 app = VisorView()
