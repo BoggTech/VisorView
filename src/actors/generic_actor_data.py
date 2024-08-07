@@ -7,7 +7,7 @@ from src.actors.actor_data import ActorData
 
 
 class GenericActorData(ActorData):
-    def __init__(self, name, model_path, animation_prefix):
+    def __init__(self, name, model_path, animation_prefix, scale=1):
         """Initializes generic actor data. This is for simple actors that consist of a model and some animations,
         specified with a glob pattern.
 
@@ -17,6 +17,7 @@ class GenericActorData(ActorData):
         """
         super().__init__()
         self.set_name(name)
+        self.add_data("scale", scale)
         self.model_path = model_path
 
         self.generic_animation_paths = glob.glob("phase_*/models/char/" + animation_prefix + "*.bam")
@@ -34,4 +35,7 @@ class GenericActorData(ActorData):
         return self.generic_animations
 
     def generate_actor(self):
-        return Actor(self.model_path, self.generic_animation_dict)
+        scale = self.get_data("scale")
+        actor = Actor(self.model_path, self.generic_animation_dict)
+        actor.set_scale(scale)
+        return actor

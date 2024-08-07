@@ -76,8 +76,8 @@ MISC = [
     GoonActorData("Construction Goon (Red)", (0.95, 0.0, 0.0, 1.0), 1.6),
     GoonActorData("Security Goon (Blue)", (0.47, 0.55, 1.0, 1.0), 3.5, is_security=True),
     GoonActorData("Security Goon (Purple)", (0.51, 0.23, 0.75, 1.0), 3.5, is_security=True),
-    GenericActorData("The Boiler", "phase_5/models/char/ttr_r_chr_cbg_boss.bam", "ttr_a_chr_cbg_boss_"),
-    GenericActorData("Sellbot Field Office", "phase_5/models/char/ttr_r_ara_cbe_cogdoSell.bam", "ttr_a_ara_cbe_cogdoSell_")
+    GenericActorData("The Boiler", "phase_5/models/char/ttr_r_chr_cbg_boss.bam", "ttr_a_chr_cbg_boss_", .5),
+    GenericActorData("Sellbot Field Office", "phase_5/models/char/ttr_r_ara_cbe_cogdoSell.bam", "ttr_a_ara_cbe_cogdoSell_", .5)
 ]
 
 ACTORS = {"supervisors": SUPERVISORS,
