@@ -102,7 +102,7 @@ class ActorManager(NodePath):
         """Hides/shows the actor's shadow."""
         self.__is_shadow = is_shadow
         if is_shadow:
-            self.__shadow.show()
+            self.__shadow.show_through()
         else:
             self.__shadow.hide()
 
