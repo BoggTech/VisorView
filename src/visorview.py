@@ -163,7 +163,7 @@ class VisorView(ShowBase):
 
         if not for_posing and len(parts) < 2:
             # no need to select part when we only have one
-            self.add_animations_to_list()
+            self.add_animations_to_list(want_back_button=False)
             return
 
         method = self.start_posing_part if for_posing else self.add_animations_to_list
