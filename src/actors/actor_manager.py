@@ -68,9 +68,7 @@ class ActorManager(NodePath):
             self.__is_posed[part] = False
             self.__pose_frame[part] = 0
             self.__pose_animation[part] = None
-
-        # disable posing + clear anim
-        self.set_pose_mode(False)
+            self.set_pose_mode(False, part)
 
     def set_head_visibility(self, is_head):
         """Hides/shows the actor's head based on boolean is_head (if possible)."""
@@ -151,7 +149,7 @@ class ActorManager(NodePath):
                 self.__actor.pose(self.__pose_animation[part], self.__pose_frame[part], part)
         else:
             if self.__pose_animation[part] is not None:
-                self.__actor.loop(self.__pose_animation[part], part)
+                self.__actor.loop(self.__pose_animation[part], partName=part)
 
     def is_posed(self, part=None):
         """Returns True if the actor is posed, False otherwise. If no part is specified, it will use the first
