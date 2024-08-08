@@ -2,6 +2,7 @@ from panda3d.core import VBase4
 from src.actors.cog_actor_data import CogActorData
 from src.actors.goon_actor_data import GoonActorData
 from src.actors.generic_actor_data import GenericActorData
+from src.actors.boss_actor_data import BossActorData
 
 A_SIZE = 6.06
 B_SIZE = 5.29
@@ -21,6 +22,13 @@ SUPERVISORS = [
     CogActorData("Club President", "boss", "a", 0.706, (0.950, 0.750, 0.750, 1.0), "phase_4/models/char/ttr_m_ene_bossbotClubPresident.bam", is_supervisor=True)
 ]
 
+BOSSES = [
+    BossActorData("Senior Vice President (VP)", "sell", 1),
+    BossActorData("Chief Financial Officer (CFO)", "cash", 1),
+    BossActorData("Chief Justice (CJ)", "law", 1),
+    BossActorData("Chief Executive Officer (CEO)", "boss", 1),
+]
+
 SELLBOTS = [
     CogActorData("Cold Caller", "sell", "c", 3.5 / C_SIZE, VBase4(0.55, 0.65, 1.0, 1.0), head_nodes="**/coldcaller", head_color=VBase4(0.25, 0.35, 1.0, 1.0)),
     CogActorData("Telemarketer", "sell", "b", 3.75 / B_SIZE, head_nodes="**/telemarketer", ),
@@ -31,7 +39,8 @@ SELLBOTS = [
     CogActorData("The Mingler", "sell", "a", 5.75 / A_SIZE, head_nodes="**/twoface", head_texture=HEAD_PREFIX_4 + "mingler.jpg"),
     CogActorData("Mr. Hollywood", "sell", "a", 7.0 / A_SIZE, head_nodes="**/yesman"),
     SUPERVISORS[0],  # foreman (neutral)
-    SUPERVISORS[1]   # foreman (angry)
+    SUPERVISORS[1],   # foreman (angry)
+    BOSSES[0]  # vp
 ]
 
 CASHBOTS = [
@@ -43,7 +52,8 @@ CASHBOTS = [
     CogActorData('Money Bags', 'cash', 'c', 5.3 / C_SIZE, head_nodes='**/moneybags'),
     CogActorData('Loan Shark', 'cash', 'b', 6.5 / B_SIZE, VBase4(0.5, 0.85, 0.75, 1.0), head_nodes='**/loanshark'),
     CogActorData('Robber Baron', 'cash', 'a', 7.0 / A_SIZE, head_nodes='**/yesman', head_texture=HEAD_PREFIX_4 + 'robber-baron.jpg'),
-    SUPERVISORS[2]  # auditor
+    SUPERVISORS[2],  # auditor
+    BOSSES[1]  # cfo
 ]
 
 LAWBOTS = [
@@ -55,7 +65,8 @@ LAWBOTS = [
     CogActorData('Spin Doctor', 'law', 'b', 5.65 / B_SIZE, VBase4(0.5, 0.8, 0.75, 1.0), head_nodes='**/telemarketer', head_texture=HEAD_PREFIX_4 + 'spin-doctor.jpg'),
     CogActorData('Legal Eagle', 'law', 'a', 7.125 / A_SIZE, VBase4(0.25, 0.25, 0.5, 1.0), head_nodes='**/legaleagle'),
     CogActorData('Big Wig', 'law', 'a', 7.0 / A_SIZE, head_nodes='**/bigwig'),
-    SUPERVISORS[3]  # clerk
+    SUPERVISORS[3],  # clerk
+    BOSSES[2]  # cj
 ]
 
 BOSSBOTS = [
@@ -67,7 +78,8 @@ BOSSBOTS = [
     CogActorData('Head Hunter', 'boss', 'a', 6.5 / A_SIZE, head_nodes='**/headhunter'),
     CogActorData('Corporate Raider', 'boss', 'c', 6.75 / C_SIZE, VBase4(0.85, 0.55, 0.55, 1.0), head_nodes='**/flunky', head_texture=HEAD_PREFIX_3_5 + 'corporate-raider.jpg'),
     CogActorData('The Big Cheese', 'boss', 'a', 7.0 / A_SIZE, VBase4(0.75, 0.95, 0.75, 1.0), head_nodes='**/bigcheese'),
-    SUPERVISORS[4]  # club president
+    SUPERVISORS[4],  # club president,
+    BOSSES[3]  # ceo
 ]
 
 MISC = [
@@ -85,7 +97,8 @@ ACTORS = {"supervisors": SUPERVISORS,
           "cashbots": CASHBOTS,
           "lawbots": LAWBOTS,
           "bossbots": BOSSBOTS,
+          "bosses": BOSSES,
           "misc": MISC
           }
 
-COG_SET_NAMES = ["supervisors", "sellbots", "cashbots", "lawbots", "bossbots", "misc"]
+COG_SET_NAMES = ["supervisors", "sellbots", "cashbots", "lawbots", "bossbots", "bosses", "misc"]

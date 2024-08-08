@@ -119,7 +119,7 @@ class CogActorData(ActorData):
     def get_animation_names(self):
         """Returns a list of animation names for this actor."""
         suit_type = self.get_data("suit_type")
-        return None if suit_type is None else SUIT_ANIMATIONS[suit_type]
+        return None if suit_type is None else {'modelRoot': SUIT_ANIMATIONS[suit_type]}
 
     def generate_actor(self):
         """Method that generates and returns the full cog as an actor, animations included."""

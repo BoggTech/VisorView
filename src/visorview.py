@@ -29,6 +29,8 @@ class VisorView(ShowBase):
         self.animation_scroll_list.hide()
         self.available_animations = []
         self.is_animation_scroll = False
+        self.is_pose_scroll = False
+        self.is_scroll_visible = False
 
         # initialize our actor
         self.actors = ACTORS["supervisors"]
@@ -36,6 +38,7 @@ class VisorView(ShowBase):
         self.actor = ActorManager()
         self.actor.reparent_to(render)
         self.index = 0
+        self.current_pose_part = None
         self.build_cog()
 
         self.reset_camera_pos()
@@ -55,7 +58,7 @@ class VisorView(ShowBase):
         self.accept("4", lambda: self.switch_actor_set("lawbots"))
         self.accept("5", lambda: self.switch_actor_set("bossbots"))
         self.accept("a", self.toggle_animation_scroll)
-        self.accept("p", self.actor.toggle_posed)
+        self.accept("p", self.toggle_posing)
         self.accept("b", self.actor.toggle_animation_smoothing)
         self.accept("f9", self.take_screenshot)
         self.accept("control-z", self.reset_camera_pos)
@@ -92,33 +95,31 @@ class VisorView(ShowBase):
     def scroll_up(self):
         """Function that should be called when the mousewheel is scrolled up, used for functionality in pose mode and
         the animation list."""
-        if self.is_animation_scroll:
+        if self.is_scroll_visible:
             self.animation_scroll_list.scrollBy(-1)
-        elif self.actor.is_posed():
-            self.actor.increment_pose(1)
+        elif self.actor.is_posed(self.current_pose_part) and self.current_pose_part is not None:
+            self.actor.increment_pose(1, self.current_pose_part)
 
     def scroll_down(self):
         """Function that should be called when the mousewheel is scrolled down, used for functionality in pose mode
         and the animation list."""
-        if self.is_animation_scroll:
+        if self.is_scroll_visible:
             self.animation_scroll_list.scrollBy(1)
-        elif self.actor.is_posed():
-            self.actor.increment_pose(-1)
+        elif self.actor.is_posed(self.current_pose_part) and self.current_pose_part is not None:
+            self.actor.increment_pose(-1, self.current_pose_part)
 
     def build_cog(self):
         """Function that gets the name of the current cog and assembles/configures its based on parameters defined in
         visorview_globals.py.
         """
+        if self.is_scroll_visible:
+            self.set_animation_scroll_visibility(False, True)
+            self.set_animation_scroll_visibility(False, False)
+
+        if self.current_pose_part is not None:
+            self.toggle_posing()
+
         self.actor.set_actor_data(self.actors[self.index])
-        self.available_animations = self.actor.get_actor_animations()
-        self.available_animations.sort()
-        self.animation_scroll_list.removeAndDestroyAllItems()
-        for i in self.available_animations:
-            if not i == "lose" and not i == "lose_zero":
-                # lose animations have their own body type and viewing them on the wrong model = unpleasant
-                new_button = DirectButton(text=i, text_scale=0.1, text_align=TextNode.ALeft, relief=None,
-                                          suppressMouse=False, command=self.actor.animate, extraArgs=[i])
-                self.animation_scroll_list.addItem(new_button)
 
     def cycle(self, is_left=False, department=False):
         """Function that rotates to the next cog in the list of cogs defined in visorview_globals.py.
@@ -154,22 +155,100 @@ class VisorView(ShowBase):
             self.index = len(self.actors) - 1
         self.build_cog()
 
-    def toggle_animation_scroll(self, state=None):
-        """Function that toggles the animation scroll list. Mouse controls are disabled when its open.
+    def add_actor_parts_to_list(self, for_posing=False):
+        """Function that clears the animation list and adds the actor parts to it. if for_posing is true, the buttons
+        will enable pose mode for that part."""
+        self.animation_scroll_list.removeAndDestroyAllItems()
+        parts = self.actor.get_actor_parts()
 
-        :param boolean state: The desired state. Set to None by default, which will simply toggle the current state.
+        if not for_posing and len(parts) < 2:
+            # no need to select part when we only have one
+            self.add_animations_to_list(want_back_button=False)
+            return
+
+        method = self.start_posing_part if for_posing else self.add_animations_to_list
+        label = "POSE PART" if for_posing else "ANIMATE PART"
+        text = DirectLabel(text=label, text_scale=0.1, text_align=TextNode.ALeft, relief=None)
+        self.animation_scroll_list.addItem(text)
+
+        for part in parts:
+            new_button = DirectButton(text=part, text_scale=0.1, text_align=TextNode.ALeft, relief=None,
+                                      suppressMouse=False, command=method, extraArgs=[part])
+            self.animation_scroll_list.addItem(new_button)
+
+    def add_animations_to_list(self, part='modelRoot', want_back_button=True):
+        """Function that clears the animation list and adds animations to it, based on a specified part. Will add a
+        back button by default, returning to the list of actor parts, unless want_back_button is set to false."""
+        self.available_animations = self.actor.get_actor_animations(part)
+        self.available_animations.sort()
+        self.animation_scroll_list.removeAndDestroyAllItems()
+
+        if want_back_button:
+            back_button = DirectButton(text="<- BACK", text_scale=0.1, text_align=TextNode.ALeft, relief=None,
+                                       suppressMouse=False, command=self.add_actor_parts_to_list)
+            self.animation_scroll_list.addItem(back_button)
+
+        for i in self.available_animations:
+            if not i == "lose" and not i == "lose_zero":
+                # lose animations have their own body type and viewing them on the wrong model = unpleasant
+                new_button = DirectButton(text=i, text_scale=0.1, text_align=TextNode.ALeft, relief=None,
+                                          suppressMouse=False, command=self.animate_actor, extraArgs=[i, part])
+                self.animation_scroll_list.addItem(new_button)
+
+    def animate_actor(self, animation, part=None):
+        """Method that calls an animation on our actor and updates pose mode accordingly"""
+        if self.current_pose_part is not None:
+            self.toggle_posing()
+        self.actor.animate(animation, part)
+
+    def toggle_animation_scroll(self):
+        """Function that toggles the animation scroll list."""
+        self.set_animation_scroll_visibility(not self.is_animation_scroll, False)
+
+    def toggle_pose_scroll(self):
+        self.set_animation_scroll_visibility(not self.is_animation_scroll, True)
+
+    def set_animation_scroll_visibility(self, state, for_posing):
+        """Enables or disables the animation scroll list based on boolean 'state'. Mouse controls are disabled when its
+        open. If for_posing is true, the animation scroll list will be used to select a body part for posing
         """
-        if state is not None:
-            self.is_animation_scroll = state
-        else:
-            self.is_animation_scroll = not self.is_animation_scroll
-
-        if self.is_animation_scroll:
+        if state:
+            # we'll be making it visible so prepare the items and disable cam
+            self.add_actor_parts_to_list(for_posing)
             self.animation_scroll_list.show()
             self.disable_mouse_cam()
+            self.is_scroll_visible = True
         else:
             self.animation_scroll_list.hide()
             self.enable_mouse_cam()
+            self.is_scroll_visible = False
+        if for_posing:
+            # we're doing this for posing
+            self.is_animation_scroll = False
+            self.is_pose_scroll = state
+        else:
+            # we're doing this for animations
+            self.is_pose_scroll = False
+            self.is_animation_scroll = state
+
+    def toggle_posing(self):
+        """Function that prompts the user to select a part for posing (if there's more than one) otherwise
+        it enables posing mode for the sole part. Will also toggle pose mode off when called a second time
+        """
+        if self.current_pose_part is not None:
+            self.current_pose_part = None
+            return
+        parts = self.actor.get_actor_parts()
+        if len(parts) > 1:
+            self.set_animation_scroll_visibility(not self.is_pose_scroll, True)
+        else:
+            self.start_posing_part(parts[0])
+
+    def start_posing_part(self, part='modelRoot'):
+        """Function that begins posing the specified part and closes the animation scroll window."""
+        self.actor.set_pose_mode(True, part)
+        self.current_pose_part = part
+        self.set_animation_scroll_visibility(False, True)
 
 
 app = VisorView()
