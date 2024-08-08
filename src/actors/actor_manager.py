@@ -215,6 +215,10 @@ class ActorManager(NodePath):
         self.__actor_data = actor_data
         self.build_actor()
 
+    def get_actor_parts(self):
+        """Returns a list of the actors part names"""
+        return self.__actor.get_part_names()
+
     def __get_actor_type(self):
         """Returns the actor's type as a string.'"""
         return self.__actor_data.get_type()
