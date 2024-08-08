@@ -133,7 +133,7 @@ class ActorManager(NodePath):
 
     def toggle_animation_smoothing(self):
         """Toggles animation smoothing."""
-        self.set_animation_smoothing(not self.get_animation_smoothing())
+        self.set_animation_smoothing(not self.is_animation_smoothed())
 
     def set_pose_mode(self, is_posed, part=None):
         """Enables or disables pose mode based on boolean is_posed (if possible). If no part is specified, it will use
