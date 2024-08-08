@@ -56,7 +56,5 @@ if not os.path.exists("TTR_INSTALL_PATH"):
     f.write(str(phase_file_dir))
     f.close()
 
-print(phase_file_dir)
-
 # Run main program
 import src.visorview
