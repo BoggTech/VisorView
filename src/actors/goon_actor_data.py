@@ -25,6 +25,7 @@ SG_COLORS = [
 class GoonActorData(ActorData):
     has_shadow = True
     shadow_node = "*"
+    actor_type = "goon"
 
     def __init__(self, name, hat_color=(1, 1, 1, 1), scale=1, is_security=False):
         """Initializes the Goon actor data.

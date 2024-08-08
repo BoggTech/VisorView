@@ -97,7 +97,7 @@ class VisorView(ShowBase):
         the animation list."""
         if self.is_scroll_visible:
             self.animation_scroll_list.scrollBy(-1)
-        elif self.actor.is_posed(self.current_pose_part):
+        elif self.actor.is_posed(self.current_pose_part) and self.current_pose_part is not None:
             self.actor.increment_pose(1, self.current_pose_part)
 
     def scroll_down(self):
@@ -105,7 +105,7 @@ class VisorView(ShowBase):
         and the animation list."""
         if self.is_scroll_visible:
             self.animation_scroll_list.scrollBy(1)
-        elif self.actor.is_posed(self.current_pose_part):
+        elif self.actor.is_posed(self.current_pose_part) and self.current_pose_part is not None:
             self.actor.increment_pose(-1, self.current_pose_part)
 
     def build_cog(self):
@@ -160,6 +160,11 @@ class VisorView(ShowBase):
         will enable pose mode for that part."""
         self.animation_scroll_list.removeAndDestroyAllItems()
         parts = self.actor.get_actor_parts()
+
+        if not for_posing and len(parts) < 2:
+            # no need to select part when we only have one
+            self.add_animations_to_list()
+            return
 
         method = self.start_posing_part if for_posing else self.add_animations_to_list
         label = "POSE PART" if for_posing else "ANIMATE PART"
@@ -231,16 +236,20 @@ class VisorView(ShowBase):
         it enables posing mode for the sole part. Will also toggle pose mode off when called a second time
         """
         if self.current_pose_part is not None:
-            self.actor.set_pose_mode(False, self.current_pose_part)
             self.current_pose_part = None
             return
-        self.set_animation_scroll_visibility(not self.is_pose_scroll, True)
+        parts = self.actor.get_actor_parts()
+        if len(parts) > 1:
+            self.set_animation_scroll_visibility(not self.is_pose_scroll, True)
+        else:
+            self.start_posing_part(parts[0])
 
     def start_posing_part(self, part='modelRoot'):
         """Function that begins posing the specified part and closes the animation scroll window."""
         self.actor.set_pose_mode(True, part)
         self.current_pose_part = part
         self.set_animation_scroll_visibility(False, True)
+
 
 app = VisorView()
 app.render.set_antialias(AntialiasAttrib.MMultisample)

@@ -7,6 +7,8 @@ from src.actors.actor_data import ActorData
 
 
 class GenericActorData(ActorData):
+    actor_type = "generic"
+
     def __init__(self, name, model_path, animation_prefix, scale=1):
         """Initializes generic actor data. This is for simple actors that consist of a model and some animations,
         specified with a glob pattern.
