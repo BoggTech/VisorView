@@ -110,14 +110,34 @@ class VisorView(ShowBase):
         visorview_globals.py.
         """
         self.actor.set_actor_data(self.actors[self.index])
-        self.available_animations = self.actor.get_actor_animations()
+        self.add_actor_parts_to_list()
+
+    def add_actor_parts_to_list(self):
+        """Function that clears the animation list and adds the actor parts to it."""
+        self.animation_scroll_list.removeAndDestroyAllItems()
+        parts = self.actor.get_actor_parts()
+        for part in parts:
+            new_button = DirectButton(text=part, text_scale=0.1, text_align=TextNode.ALeft, relief=None,
+                                      suppressMouse=False, command=self.add_animations_to_list, extraArgs=[part])
+            self.animation_scroll_list.addItem(new_button)
+
+    def add_animations_to_list(self, part='modelRoot', want_back_button=True):
+        """Function that clears the animation list and adds animations to it, based on a specified part. Will add a
+        back button by default, returning to the list of actor parts, unless want_back_button is set to false."""
+        self.available_animations = self.actor.get_actor_animations(part)
         self.available_animations.sort()
         self.animation_scroll_list.removeAndDestroyAllItems()
+
+        if want_back_button:
+            back_button = DirectButton(text="<- BACK", text_scale=0.1, text_align=TextNode.ALeft, relief=None,
+                                       suppressMouse=False, command=self.add_actor_parts_to_list)
+            self.animation_scroll_list.addItem(back_button)
+
         for i in self.available_animations:
             if not i == "lose" and not i == "lose_zero":
                 # lose animations have their own body type and viewing them on the wrong model = unpleasant
                 new_button = DirectButton(text=i, text_scale=0.1, text_align=TextNode.ALeft, relief=None,
-                                          suppressMouse=False, command=self.actor.animate, extraArgs=[i])
+                                          suppressMouse=False, command=self.actor.animate, extraArgs=[i, part])
                 self.animation_scroll_list.addItem(new_button)
 
     def cycle(self, is_left=False, department=False):
