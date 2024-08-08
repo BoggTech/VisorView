@@ -41,7 +41,7 @@ class GoonActorData(ActorData):
 
     def get_animation_names(self):
         """Returns a list of animation names for this actor."""
-        return GOON_ANIMATIONS
+        return {'modelRoot': GOON_ANIMATIONS}
 
     def generate_actor(self):
         actor = Actor(GOON_MODEL, GOON_ANIMATION_DICT)
