@@ -1,12 +1,17 @@
 from direct.actor.Actor import Actor
 
+
 class ActorData:
     """Base class for VisorView actors. These do not store the actor at any point, rather, store information on how
     to generate them at any given moment, as well as a method to do just that.
     """
-    actor_type = ""
-    has_shadow = False
-    shadow_node = ""
+    """Class attribute that holds special nodes the actor has, e.g. shadow or head
+    example usage when overriding:
+    special_nodes = {"shadow": "**/shadow**", 
+                     "head": "**/head**"}
+    """
+    _actor_type = ""
+    _special_nodes = {}
 
     def __init__(self):
         self.__data = {}
@@ -29,6 +34,12 @@ class ActorData:
     def get_name(self):
         return self.__name
 
+    def get_special_node(self, key):
+        """Method that returns a path to a special node given a key. If no node exists, it will return None
+
+        :param key: The name of the node"""
+        return self._special_nodes[key] if key in self._special_nodes else None
+
     def generate_actor(self):
         """Returns an actor based on the data within this class."""
         pass
@@ -38,4 +49,4 @@ class ActorData:
         pass
 
     def get_type(self):
-        return self.actor_type
+        return self._actor_type

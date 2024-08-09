@@ -58,9 +58,9 @@ SUIT_ANIMATIONS = {"a": list(SUIT_ANIMATION_DICTS["a"]),
 
 class CogActorData(ActorData):
     """Class that stores data for and generates Toontown Rewritten cog actors."""
-    actor_type = "cog"
-    has_shadow = True
-    shadow_node = "**/def_shadow"
+    _actor_type = "cog"
+    _special_nodes = {"shadow": "**/def_shadow",
+                      "head": '**/def_head'}
 
     def __init__(self, name, department, suit_type, scale, hand_color=None, head_path=None, head_nodes=None,
                  head_color=None, head_texture=None, is_supervisor=False):

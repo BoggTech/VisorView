@@ -47,8 +47,10 @@ class ActorManager(NodePath):
             self.__actor.remove_node()
 
         self.__actor = self.__actor_data.generate_actor()
-        if self.__actor_data.has_shadow:
-            self.__shadow.reparent_to(self.__actor.find(self.__actor_data.shadow_node))
+
+        shadow_node = self.__actor_data.get_special_node("shadow")
+        if shadow_node:
+            self.__shadow.reparent_to(self.__actor.find(shadow_node))
 
         # match settings
         self.set_head_visibility(self.get_head_visibility())
@@ -73,11 +75,12 @@ class ActorManager(NodePath):
     def set_head_visibility(self, is_head):
         """Hides/shows the actor's head based on boolean is_head (if possible)."""
         self.__is_head = is_head
-        if self.__get_actor_type() == 'cog':
+        head_node = self.__actor_data.get_special_node("head")
+        if head_node:
             if self.__is_head:
-                self.__actor.find('**/def_head').show_through()
+                self.__actor.find(head_node).show_through()
             else:
-                self.__actor.find('**/def_head').hide()
+                self.__actor.find(head_node).hide()
 
     def get_head_visibility(self):
         """Returns True if the actor's head is visible, False otherwise."""
