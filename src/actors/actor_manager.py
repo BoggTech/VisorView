@@ -93,11 +93,10 @@ class ActorManager(NodePath):
     def set_body_visibility(self, is_body):
         """Hides/shows the actor's body based on boolean is_body (if possible)."""
         self.__is_body = is_body
-        if self.__get_actor_type() == 'cog':
-            if self.__is_body:
-                self.__actor.show()
-            else:
-                self.__actor.hide()
+        if self.__is_body:
+            self.__actor.show()
+        else:
+            self.__actor.hide()
 
     def get_body_visibility(self):
         """Returns True if the actor's body is visible, False otherwise.'"""

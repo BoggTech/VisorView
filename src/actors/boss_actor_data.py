@@ -55,6 +55,8 @@ ANIMATION_NAME_DICT = {
 class BossActorData(ActorData):
     """Class that stores data on and generates actors for the four Boss Cogs."""
     _actor_type = "boss"
+    _special_nodes = {"head": "**/__Actor_head",
+                      "shadow": "*"}
 
     def __init__(self, name, department, scale):
         """Initializes the actor data.
