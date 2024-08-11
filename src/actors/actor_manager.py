@@ -67,9 +67,6 @@ class ActorManager(NodePath):
         self.__pose_frame = {}
         self.__pose_animation = {}
         for part in self.__actor.get_part_names():
-            self.__is_posed[part] = False
-            self.__pose_frame[part] = 0
-            self.__pose_animation[part] = None
             self.set_pose_mode(False, part)
 
     def set_head_visibility(self, is_head):
@@ -145,19 +142,28 @@ class ActorManager(NodePath):
         current_animation_frame = self.__actor.get_current_frame(current_animation, part)
 
         if self.is_posed(part):
+            self.__pose_animation[part] = current_animation
+            self.__pose_frame[part] = current_animation_frame
             if current_animation is not None:
-                self.__pose_animation[part] = current_animation
-                self.__pose_frame[part] = current_animation_frame
                 self.__actor.pose(self.__pose_animation[part], self.__pose_frame[part], part)
         else:
-            if self.__pose_animation[part] is not None:
+            if self.get_current_animation(part) is not None:
                 self.__actor.loop(self.__pose_animation[part], partName=part)
 
     def is_posed(self, part=None):
         """Returns True if the actor is posed, False otherwise. If no part is specified, it will use the first
         part in the dictionary."""
         part = self.get_first_part() if part is None else part
-        return self.__is_posed[part]
+        return self.__is_posed[part] if part in self.__is_posed else False
+
+    def get_current_animation(self, part=None):
+        """Gets the current animation on the part, posed or looping. If no part is specified, it will use the first
+        part in the dictionary."""
+        part = self.get_first_part() if part is None else part
+        if self.is_posed(part):
+            return self.__pose_animation[part] if part in self.__pose_animation else None
+        else:
+            return self.__actor.get_current_anim(part)
 
     def toggle_posed(self, part=None):
         """Toggles pose mode. If no part is specified, it will use the first
@@ -175,8 +181,8 @@ class ActorManager(NodePath):
             return
 
         # modulo to ensure frame count loops around
-        part_frame = self.__pose_frame[part]
-        part_animation = self.__pose_animation[part]
+        part_frame = self.get_current_frame(part)
+        part_animation = self.get_current_animation(part)
         current_anim_frame_count = self.__actor.get_num_frames(part_animation)
         # framecount will be none if no animation is currently playing, this prevents a crash
         if current_anim_frame_count is not None:
@@ -190,7 +196,7 @@ class ActorManager(NodePath):
         if self.is_posed(part):
             return self.__pose_frame[part]
         else:
-            current_animation = self.__actor.get_current_anim()
+            current_animation = self.__actor.get_current_anim(part)
             return self.__actor.get_current_frame(current_animation, part)
 
     def get_first_part(self):
