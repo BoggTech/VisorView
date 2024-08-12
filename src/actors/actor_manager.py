@@ -148,7 +148,7 @@ class ActorManager(NodePath):
                 self.__actor.pose(self.__pose_animation[part], self.__pose_frame[part], part)
         else:
             if self.get_current_animation(part) is not None:
-                self.__actor.loop(self.__pose_animation[part], partName=part)
+                self.__actor.loop(self.get_current_animation(part), partName=part)
 
     def is_posed(self, part=None):
         """Returns True if the actor is posed, False otherwise. If no part is specified, it will use the first
