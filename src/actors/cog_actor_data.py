@@ -64,7 +64,7 @@ class CogActorData(ActorData):
 
     def __init__(self, name, department, suit_type, scale, hand_color=None, head_path=None, head_nodes=None,
                  head_color=None, head_texture=None, is_supervisor=False):
-        """Initializes the CogActor instance.
+        """Initializes the CogActorData instance.
 
         :param name: The name of the cog.
         :param department: The department of the cog (sell, cash, law or boss)
@@ -153,7 +153,6 @@ class CogActorData(ActorData):
         if head_texture is not None:
             head_tx = loader.load_texture(head_texture)
             head_null.set_texture(head_tx, 1)
-
 
         # Load and attach insignia
         chest_null = cog.find("**/def_joint_attachMeter")
