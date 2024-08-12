@@ -63,15 +63,19 @@ class BossActorData(ActorData):
         :param department: Department name. (sell, cash, law or boss)
         :type department: str
         :param scale: Scale of the Boss Cog.
-        :type scale: int"""
-
+        :type scale: int
+        """
         super().__init__()
         self.add_data("scale", scale)
         self.add_data("department", department)
         self.set_name(name)
 
     def generate_actor(self):
-        """Returns an actor based on the data within this class."""
+        """Returns an actor based on the data within this class.
+
+        :return: An actor based on the data within this class.
+        :rtype: Actor
+        """
         department = self.get_data("department")
         actor = Actor({
             'head': HEAD_DICT[department],
@@ -92,5 +96,9 @@ class BossActorData(ActorData):
         return actor
 
     def get_animation_names(self):
-        """Returns a list of valid animations for the actor."""
+        """Returns a dict specifying the animation names for this actor and its parts.
+
+        :return: A dict of animation names with actor parts as keys.
+        :rtype: dict
+        """
         return ANIMATION_NAME_DICT

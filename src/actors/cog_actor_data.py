@@ -66,15 +66,24 @@ class CogActorData(ActorData):
                  head_color=None, head_texture=None, is_supervisor=False):
         """Initializes the CogActorData instance.
 
-        :param name: The name of the cog.
+        :param str name: The name of the cog.
+        :type name: str
         :param department: The department of the cog (sell, cash, law or boss)
+        :type department: str
         :param suit_type: The suit type of the cog (a, b or c).
+        :type suit_type: str
         :param scale: The scale of the cog.
+        :type scale: float
         :param hand_color: The hand color of the cog. Has defaults based on department.
+        :type hand_color: Vec4
         :param head_path: The path to the head of the cog. Defaults to default model for the suit type.
+        :type head_path: str
         :param head_nodes: The node(s) to show for the head. Can be a string or list of strings. "*" by default.
+        :type head_nodes: list[str]
         :param head_color: The color of the head. Not applied by default.
+        :type head_color: Vec4
         :param is_supervisor: If the cog should use supervisor suit textures or not. Defaults to False.
+        :type is_supervisor: bool
         """
         super().__init__()
         head_nodes = ["*"] if head_nodes is None else head_nodes
@@ -96,7 +105,9 @@ class CogActorData(ActorData):
         """Returns a dict of textures for a based on provided parameters. Returns None for invalid parameters.
 
         :param department: Department name: sell, cash, law or boss.
+        :type department: str
         :param is_supervisor: True if the cog is a Supervisor.
+        :type is_supervisor: bool
         """
         department = department.lower()
         if department not in DEPARTMENTS:
@@ -117,12 +128,20 @@ class CogActorData(ActorData):
         return texture_dict
 
     def get_animation_names(self):
-        """Returns a list of animation names for this actor."""
+        """Returns a dict specifying the animation names for this actor and its parts.
+
+        :return: A dict of animation names with actor parts as keys.
+        :rtype: dict
+        """
         suit_type = self.get_data("suit_type")
         return None if suit_type is None else {'modelRoot': SUIT_ANIMATIONS[suit_type]}
 
     def generate_actor(self):
-        """Method that generates and returns the full cog as an actor, animations included."""
+        """Returns an actor based on the data within this class.
+
+        :return: An actor based on the data within this class.
+        :rtype: Actor
+        """
         # Begin by creating the suit + applying the appropriate textures
         suit_type = self.get_data("suit_type")
         suit_model_path = SUIT_MODELS[suit_type]

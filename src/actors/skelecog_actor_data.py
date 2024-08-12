@@ -27,14 +27,22 @@ class SkelecogActorData(CogActorData):
         """Initializes the SkelecogActorData instance.
 
         :param name: The name of the cog.
+        :type name: str
         :param department: The department of the cog (sell, cash, law or boss)
+        :type department: str
         :param suit_type: The suit type of the cog (a, b or c).
-        :param scale: The scale of the cog."""
-
+        :type suit_type: str
+        :param scale: The scale of the cog.
+        :type scale: int
+        """
         super().__init__(name, department, suit_type, scale)
 
     def generate_actor(self):
-        """Returns an actor based on the data within this class."""
+        """Returns an actor based on the data within this class.
+
+        :return: An actor based on the data within this class.
+        :rtype: Actor
+        """
         department = self.get_data("department")
         suit_type = self.get_data("suit_type")
         scale = self.get_data("scale")

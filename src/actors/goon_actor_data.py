@@ -27,12 +27,17 @@ class GoonActorData(ActorData):
     _special_nodes = {"shadow": "*"}
 
     def __init__(self, name, hat_color=(1, 1, 1, 1), scale=1, is_security=False):
-        """Initializes the Goon actor data.
+        """Initializes the GoonActorData instance.
 
         :param name: The name of the Goon.
+        :type name: str
         :param hat_color: Color of the goons hat.
+        :type hat_color: Vec4
         :param scale: Scale of the goon.
-        :param sg: Set to true to use the Security Goon model."""
+        :type scale: float
+        :param is_security: Set to true to use the Security Goon model.
+        :type is_security: bool
+        """
         super().__init__()
         self.set_name(name)
         self.add_data("hat_color", hat_color)
@@ -40,10 +45,19 @@ class GoonActorData(ActorData):
         self.add_data("is_security", is_security)
 
     def get_animation_names(self):
-        """Returns a list of animation names for this actor."""
+        """Returns a dict specifying the animation names for this actor and its parts.
+
+        :return: A dict of animation names with actor parts as keys.
+        :rtype: dict
+        """
         return {'modelRoot': GOON_ANIMATIONS}
 
     def generate_actor(self):
+        """Returns an actor based on the data within this class.
+
+        :return: An actor based on the data within this class.
+        :rtype: Actor
+        """
         actor = Actor(GOON_MODEL, GOON_ANIMATION_DICT)
         hat_color = self.get_data("hat_color")
         is_security = self.get_data("is_security")

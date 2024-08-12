@@ -14,8 +14,11 @@ class GenericActorData(ActorData):
         specified with a glob pattern.
 
         :param name: The name of the generic actor.
+        :type name: str
         :param model_path: The path to the actors model.
+        :type model_path: str
         :param animation_prefix: The prefix of the actors animations, used in a glob pattern, i.e. "tt_a_ene_cga_"
+        :type animation_prefix: str
         """
         super().__init__()
         self.set_name(name)
@@ -33,10 +36,19 @@ class GenericActorData(ActorData):
         self.generic_animations.sort()
 
     def get_animation_names(self):
-        """Returns a list of animation names for this actor."""
+        """Returns a dict specifying the animation names for this actor and its parts.
+
+        :return: A dict of animation names with actor parts as keys.
+        :rtype: dict
+        """
         return {'modelRoot': self.generic_animations}
 
     def generate_actor(self):
+        """Returns an actor based on the data within this class.
+
+        :return: An actor based on the data within this class.
+        :rtype: Actor
+        """
         scale = self.get_data("scale")
         actor = Actor(self.model_path, self.generic_animation_dict)
         actor.set_scale(scale)

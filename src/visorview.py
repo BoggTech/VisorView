@@ -15,7 +15,9 @@ class VisorView(ShowBase):
     """ShowBase instance for VisorView."""
 
     def __init__(self):
-        """Initializes the ShowBase as well as a number of local variables required by VisorView and accepts input events."""
+        """Initializes the ShowBase as well as a number of local variables required by VisorView and accepts input
+        events.
+        """
         ShowBase.__init__(self)
         self.camera_controller = Camera()
 
@@ -71,7 +73,8 @@ class VisorView(ShowBase):
 
     def take_screenshot(self):
         """Function that takes a screenshot of the ShowBase window and saves it to the screenshot directory as
-        defined in visorview_globals.py."""
+        defined in visorview_globals.py.
+        """
         path = visorview_globals.SCREENSHOT_DIR
         if not os.path.exists(path):
             os.makedirs(path)
@@ -98,7 +101,8 @@ class VisorView(ShowBase):
     # TODO: GUI should be rewritten entirely and brought to their own classes, and input should be handled in there.
     def scroll_up(self):
         """Function that should be called when the mousewheel is scrolled up, used for functionality in pose mode and
-        the animation list."""
+        the animation list.
+        """
         if self.is_scroll_visible:
             self.animation_scroll_list.scrollBy(-1)
         elif self.actor.is_posed(self.current_pose_part) and self.current_pose_part is not None:
@@ -106,21 +110,22 @@ class VisorView(ShowBase):
 
     def scroll_down(self):
         """Function that should be called when the mousewheel is scrolled down, used for functionality in pose mode
-        and the animation list."""
+        and the animation list.
+        """
         if self.is_scroll_visible:
             self.animation_scroll_list.scrollBy(1)
         elif self.actor.is_posed(self.current_pose_part) and self.current_pose_part is not None:
             self.actor.increment_pose(-1, self.current_pose_part)
 
     def build_cog(self):
-        """Function that gets the name of the current cog and assembles/configures its based on parameters defined in
-        visorview_globals.py.
-        """
+        """Function that swaps to the actor based on the current index."""
         if self.is_scroll_visible:
+            # hide the animation scroll(s)
             self.set_animation_scroll_visibility(False, True)
             self.set_animation_scroll_visibility(False, False)
 
         if self.current_pose_part is not None:
+            # make sure we aren't allowing posing input when the animation gets cleared
             self.toggle_posing()
 
         self.actor.set_actor_data(self.actors[self.index])
@@ -129,7 +134,9 @@ class VisorView(ShowBase):
         """Function that rotates to the next cog in the list of cogs defined in visorview_globals.py.
 
          :param is_left: When false, the index will decrement rather than increment.
+         :type is_left: bool
          :param department: When true, you will cycle through cog departments/sets rather than individual cogs.
+         :type department: bool
          """
         if department:
             if is_left:
@@ -139,9 +146,7 @@ class VisorView(ShowBase):
                 self.cog_set_index += 1
                 self.cog_set_index = 0 if self.cog_set_index == len(COG_SET_NAMES) else self.cog_set_index
             self.switch_actor_set(COG_SET_NAMES[self.cog_set_index])
-            return
-
-        if is_left:
+        elif is_left:
             self.index -= 1
             self.index = len(self.actors) - 1 if self.index < 0 else self.index
         else:
@@ -150,7 +155,11 @@ class VisorView(ShowBase):
         self.build_cog()
 
     def switch_actor_set(self, name):
-        """Method that swaps out the set of actors we're cycling through."""
+        """Method that swaps out the set of actors we're cycling through.
+
+        :param name: The name of the set of actors to switch to.
+        :type name: str
+        """
         if name not in ACTORS.keys():
             return
         self.actors = ACTORS[name]
@@ -160,8 +169,11 @@ class VisorView(ShowBase):
         self.build_cog()
 
     def add_actor_parts_to_list(self, for_posing=False):
-        """Function that clears the animation list and adds the actor parts to it. if for_posing is true, the buttons
-        will enable pose mode for that part."""
+        """Function that clears the animation list and adds the actor parts to it.
+
+        :param for_posing: When true, the buttons will instead enable pose mode for that part.
+        :type for_posing: bool
+        """
         self.animation_scroll_list.removeAndDestroyAllItems()
         parts = self.actor.get_actor_parts()
 
@@ -181,8 +193,13 @@ class VisorView(ShowBase):
             self.animation_scroll_list.addItem(new_button)
 
     def add_animations_to_list(self, part='modelRoot', want_back_button=True):
-        """Function that clears the animation list and adds animations to it, based on a specified part. Will add a
-        back button by default, returning to the list of actor parts, unless want_back_button is set to false."""
+        """Function that clears the animation list and adds animations to it, targeting on a specified part.
+
+        :param part: The name of the part the buttons should target.
+        :type part: str
+        :param want_back_button: When true, a back button will be added that goes back to the list of actor parts.
+        :type want_back_button: bool
+        """
         self.available_animations = self.actor.get_actor_animations(part)
         self.available_animations.sort()
         self.animation_scroll_list.removeAndDestroyAllItems()
@@ -200,21 +217,31 @@ class VisorView(ShowBase):
                 self.animation_scroll_list.addItem(new_button)
 
     def animate_actor(self, animation, part=None):
-        """Method that calls an animation on our actor and updates pose mode accordingly"""
+        """Method that calls an animation on our actor and disables posing controls if necessary.
+
+        :param animation: The name of the animation to loop.
+        :type animation: str
+        :param part: The name of the part to animate.
+        :type part: str"""
         if self.current_pose_part is not None:
             self.toggle_posing()
         self.actor.animate(animation, part)
 
     def toggle_animation_scroll(self):
-        """Function that toggles the animation scroll list."""
+        """Function that toggles the visibility animation scroll list and populates it with animation settings."""
         self.set_animation_scroll_visibility(not self.is_animation_scroll, False)
 
     def toggle_pose_scroll(self):
+        """Function that toggles the visibility animation scroll list and populates it with posing settings."""
         self.set_animation_scroll_visibility(not self.is_animation_scroll, True)
 
     def set_animation_scroll_visibility(self, state, for_posing):
-        """Enables or disables the animation scroll list based on boolean 'state'. Mouse controls are disabled when its
-        open. If for_posing is true, the animation scroll list will be used to select a body part for posing
+        """Enables or disables the animation scroll list. Mouse controls are disabled when its open.
+
+        :param state: When true, the animation scroll will be visible.
+        :type state: bool
+        :param for_posing: When true, the animation scroll will be used for posing.
+        :type for_posing: bool
         """
         if state:
             # we'll be making it visible so prepare the items and disable cam
@@ -236,8 +263,9 @@ class VisorView(ShowBase):
             self.is_animation_scroll = state
 
     def toggle_posing(self):
-        """Function that prompts the user to select a part for posing (if there's more than one) otherwise
-        it enables posing mode for the sole part. Will also toggle pose mode off when called a second time
+        """Function that toggles pose controls. If the actor has more than one part, it will prompt the animation
+        scroll list to select a part for posing, otherwise it will just enable posing and pose controls.
+        If pose controls are already enabled on any part, this function will instead disable it and return.
         """
         if self.current_pose_part is not None:
             self.current_pose_part = None
@@ -249,7 +277,11 @@ class VisorView(ShowBase):
             self.start_posing_part(parts[0])
 
     def start_posing_part(self, part='modelRoot'):
-        """Function that begins posing the specified part and closes the animation scroll window."""
+        """Function that begins posing the specified part and closes the animation scroll window.
+
+        :param part: The name of the part to target.
+        :type part: str
+        """
         self.actor.set_pose_mode(True, part)
         self.current_pose_part = part
         self.set_animation_scroll_visibility(False, True)
