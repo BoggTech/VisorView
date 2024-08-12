@@ -36,6 +36,7 @@ class ActorManager(NodePath):
         self.__looped_animation = {}  # actor intervals = .get_current_anim() isnt always accurate, store ourselves
         self.__from_frame_sequence = None  # stores the sequence used to loop an animation from a certain frame
         self.__skelecog_parent = None  # stores the original actor data when we swap to a skelecog
+        self.__head_rotation = 0  # stores the rotation of the head node, if the actor has one
 
         # actor
         self.__actor = None
@@ -76,6 +77,7 @@ class ActorManager(NodePath):
         self.set_head_visibility(self.get_head_visibility())
         self.set_body_visibility(self.get_body_visibility())
         self.set_shadow_visibility(self.get_shadow_visibility())
+        self.set_head_rotation(self.__head_rotation)
 
         # actor animations
         self.__actor_animations = self.__actor_data.get_animation_names()
@@ -318,6 +320,29 @@ class ActorManager(NodePath):
     def get_actor_parts(self):
         """Returns a list of the actors part names"""
         return self.__actor.get_part_names() if self.__actor is not None else None
+
+    def set_head_rotation(self, h):
+        """Method that sets the rotation of the actors head, if it exists.
+
+        :param h: The rotation of the actors head."""
+        if self.__actor_data is None:
+            return
+        self.__head_rotation = h
+        head_node = self.__actor_data.get_special_node("head")
+        if head_node:
+            if self.__get_actor_type() == "boss":
+                # everything about these guys is WEIRD!!
+                self.__actor.find(head_node).set_p(h)
+            else:
+                self.__actor.find(head_node).set_h(h)
+
+    def flip_head(self):
+        """Method that flips the actors head, if it exists."""
+        if self.__head_rotation > 0:
+            # assume it's 180
+            self.set_head_rotation(0)
+        else:
+            self.set_head_rotation(180)
 
     def __get_actor_type(self):
         """Returns the actor's type as a string.'"""

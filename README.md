@@ -41,6 +41,7 @@ Control+B        | Toggle Body. The cog's body/suit will be toggled on/off (if p
 A                | View animation list. This list can be scrolled, and entries can be clicked to switch the active animation. **Some controls are disabled when this menu is open!**
 P                | Toggle Pose Mode. When pose mode is active, the cog's animation will pause, and the scrollwheel can be used to cycle through the animation's frames. Pressing it again disables posing, and the actor/part will hang on the last frame you posed it at.
 B                | Toggle animation smoothing.
+H                | Flip the actor's head 180 degrees (useful for boss animations that sometimes reverse their head.)
 F9               | Take screenshot. This will be stored to the `screenshots` directory by default.
 Control+Z        | Reset to default camera position, positioning it directly in front of the cog.
 Mousewheel       | Can be used with the animations menu or pose mode. See **p** and **a** controls for instructions.

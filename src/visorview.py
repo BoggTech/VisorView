@@ -63,6 +63,7 @@ class VisorView(ShowBase):
         self.accept("a", self.toggle_animation_scroll)
         self.accept("p", self.toggle_posing)
         self.accept("b", self.actor.toggle_animation_smoothing)
+        self.accept("h", self.actor.flip_head)
         self.accept("f9", self.take_screenshot)
         self.accept("control-z", self.reset_camera_pos)
         self.accept("wheel_up", self.scroll_up)
