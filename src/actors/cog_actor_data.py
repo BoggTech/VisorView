@@ -1,16 +1,17 @@
-import os, glob
-import src.globals as globals
-from panda3d.core import Filename, Loader, Vec4, VBase4
+import os
+import posixpath
+import src.util.vfs_glob as glob
+from panda3d.core import Filename, Vec4, VBase4
 from direct.actor.Actor import Actor
-from src.actors.actor_base import ActorBase
+from src.actors.actor_data import ActorData
 
-SUIT_MODELS = {"a": Filename(globals.RESOURCES_DIR + "/phase_3.5/models/char/tt_a_ene_cga_zero.bam"),
-               "b": Filename(globals.RESOURCES_DIR + "/phase_3.5/models/char/tt_a_ene_cgb_zero.bam"),
-               "c": Filename(globals.RESOURCES_DIR + "/phase_3.5/models/char/tt_a_ene_cgc_zero.bam")}
+SUIT_MODELS = {"a": Filename("phase_3.5/models/char/tt_a_ene_cga_zero.bam"),
+               "b": Filename("phase_3.5/models/char/tt_a_ene_cgb_zero.bam"),
+               "c": Filename("phase_3.5/models/char/tt_a_ene_cgc_zero.bam")}
 
-SUIT_HEAD_DICT = {"a": Filename(globals.RESOURCES_DIR + "/phase_4/models/char/suitA-"),
-                  "b": Filename(globals.RESOURCES_DIR + "/phase_4/models/char/suitB-"),
-                  "c": Filename(globals.RESOURCES_DIR + "/phase_3.5/models/char/suitC-"),
+SUIT_HEAD_DICT = {"a": Filename("phase_4/models/char/suitA-"),
+                  "b": Filename("phase_4/models/char/suitB-"),
+                  "c": Filename("phase_3.5/models/char/suitC-"),
                   }
 
 DEPARTMENTS = ("sell", "cash", "law", "boss")
@@ -21,7 +22,7 @@ SUPERVISOR_NAME_DICT = {"sell": "sellbotForeman", "cash": "cashbotAuditor", "law
 DEPARTMENT_HAND_DICT = {"sell": VBase4(0.95, 0.75, 0.95, 1.0), "cash": VBase4(0.65, 0.95, 0.85, 1.0),
                         "law": VBase4(0.75, 0.75, 0.95, 1.0), "boss": VBase4(0.95, 0.75, 0.75, 1.0)}
 
-COG_ICONS = Filename(globals.RESOURCES_DIR + "/phase_3/models/gui/ttr_m_gui_gen_cogIcons.bam")
+COG_ICONS = Filename("phase_3/models/gui/ttr_m_gui_gen_cogIcons.bam")
 COG_ICON_POS_HPR_SCALE = (0.02, 0.05, 0.04,
                           180.00, 0.00, 0.00,
                           0.51, 0.51, 0.51)
@@ -33,9 +34,9 @@ MEDALLION_COLORS = {
     'cash': Vec4(0.749, 0.769, 0.749, 1.000),
 }
 
-SUIT_ANIMATION_PATHS = {"a": glob.glob(os.path.join(globals.RESOURCES_DIR, "**", "tt_a_ene_cga_*.bam"), recursive=True),
-                        "b": glob.glob(os.path.join(globals.RESOURCES_DIR, "**", "tt_a_ene_cgb_*.bam"), recursive=True),
-                        "c": glob.glob(os.path.join(globals.RESOURCES_DIR, "**", "tt_a_ene_cgc_*.bam"), recursive=True)}
+SUIT_ANIMATION_PATHS = {"a": glob.glob(posixpath.join("phase_*", "models", "char", "tt_a_ene_cga_*.bam")),
+                        "b": glob.glob(posixpath.join("phase_*", "models", "char", "tt_a_ene_cgb_*.bam")),
+                        "c": glob.glob(posixpath.join("phase_*", "models", "char", "tt_a_ene_cgc_*.bam"))}
 
 SUIT_ANIMATION_DICTS = {"a": {}, "b": {}, "c": {}}
 
@@ -55,24 +56,34 @@ SUIT_ANIMATIONS = {"a": list(SUIT_ANIMATION_DICTS["a"]),
 [SUIT_ANIMATIONS[x].sort() for x in SUIT_ANIMATIONS.keys()]
 
 
-class CogActor(ActorBase):
+class CogActorData(ActorData):
     """Class that stores data for and generates Toontown Rewritten cog actors."""
-    has_shadow = True
-    shadow_node = "**/def_shadow"
+    _actor_type = "cog"
+    _special_nodes = {"shadow": "**/def_shadow",
+                      "head": '**/def_head'}
 
     def __init__(self, name, department, suit_type, scale, hand_color=None, head_path=None, head_nodes=None,
                  head_color=None, head_texture=None, is_supervisor=False):
-        """Initializes the CogActor instance.
+        """Initializes the CogActorData instance.
 
-        :param name: The name of the cog.
+        :param str name: The name of the cog.
+        :type name: str
         :param department: The department of the cog (sell, cash, law or boss)
+        :type department: str
         :param suit_type: The suit type of the cog (a, b or c).
+        :type suit_type: str
         :param scale: The scale of the cog.
+        :type scale: float
         :param hand_color: The hand color of the cog. Has defaults based on department.
+        :type hand_color: Vec4
         :param head_path: The path to the head of the cog. Defaults to default model for the suit type.
+        :type head_path: str
         :param head_nodes: The node(s) to show for the head. Can be a string or list of strings. "*" by default.
+        :type head_nodes: list[str]
         :param head_color: The color of the head. Not applied by default.
+        :type head_color: Vec4
         :param is_supervisor: If the cog should use supervisor suit textures or not. Defaults to False.
+        :type is_supervisor: bool
         """
         super().__init__()
         head_nodes = ["*"] if head_nodes is None else head_nodes
@@ -94,33 +105,43 @@ class CogActor(ActorBase):
         """Returns a dict of textures for a based on provided parameters. Returns None for invalid parameters.
 
         :param department: Department name: sell, cash, law or boss.
+        :type department: str
         :param is_supervisor: True if the cog is a Supervisor.
+        :type is_supervisor: bool
         """
         department = department.lower()
         if department not in DEPARTMENTS:
             return None
 
         if is_supervisor:
-            prefix = "/phase_3.5/maps/ttr_t_ene_"
+            prefix = "phase_3.5/maps/ttr_t_ene_"
             abbr = SUPERVISOR_NAME_DICT[department]
         else:
-            prefix = "/phase_3.5/maps/"
+            prefix = "phase_3.5/maps/"
             abbr = DEPARTMENT_NAME_DICT[department]
 
-        texture_dict = {"arm": Filename(globals.RESOURCES_DIR + prefix + abbr + "_arm.jpg"),
-                        "blazer": Filename(globals.RESOURCES_DIR + prefix + abbr + "_blazer.jpg"),
-                        "leg": Filename(globals.RESOURCES_DIR + prefix + abbr + "_leg.jpg"),
-                        "sleeve": Filename(globals.RESOURCES_DIR + prefix + abbr + "_sleeve.jpg")}
+        texture_dict = {"arm": Filename(prefix + abbr + "_arm.jpg"),
+                        "blazer": Filename(prefix + abbr + "_blazer.jpg"),
+                        "leg": Filename(prefix + abbr + "_leg.jpg"),
+                        "sleeve": Filename(prefix + abbr + "_sleeve.jpg")}
 
         return texture_dict
 
-    def get_animations(self):
-        """Returns a list of animation names for this actor."""
+    def get_animation_names(self):
+        """Returns a dict specifying the animation names for this actor and its parts.
+
+        :return: A dict of animation names with actor parts as keys.
+        :rtype: dict
+        """
         suit_type = self.get_data("suit_type")
-        return None if suit_type is None else SUIT_ANIMATIONS[suit_type]
+        return None if suit_type is None else {'modelRoot': SUIT_ANIMATIONS[suit_type]}
 
     def generate_actor(self):
-        """Method that generates and returns the full cog as an actor, animations included."""
+        """Returns an actor based on the data within this class.
+
+        :return: An actor based on the data within this class.
+        :rtype: Actor
+        """
         # Begin by creating the suit + applying the appropriate textures
         suit_type = self.get_data("suit_type")
         suit_model_path = SUIT_MODELS[suit_type]
@@ -151,7 +172,6 @@ class CogActor(ActorBase):
         if head_texture is not None:
             head_tx = loader.load_texture(head_texture)
             head_null.set_texture(head_tx, 1)
-
 
         # Load and attach insignia
         chest_null = cog.find("**/def_joint_attachMeter")
