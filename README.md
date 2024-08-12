@@ -32,22 +32,48 @@ Up/Down Arrow    | Cycle through available cog sets.
 3                | Switch active set to Cashbots.
 4                | Switch active set to Lawbots.
 5                | Switch active set to Bossbots.
-S                | Toggle Shadow. The drop-shadow below the cog will be toggled on/off.
-Control+H        | Toggle Head. The cog's head will be toggled on/off.
-Control+B        | Toggle Body. The cog's body/suit will be toggled on/off.
+6                | Switch active set to Cog Bosses.
+7                | Switch active set to Misc.
+S                | Toggle Shadow. The drop-shadow below the cog will be toggled on/off (if possible).
+Control+S        | Toggle Skelecog (if possible)
+Control+H        | Toggle Head. The cog's head will be toggled on/off (if possible).
+Control+B        | Toggle Body. The cog's body/suit will be toggled on/off (if possible).
 A                | View animation list. This list can be scrolled, and entries can be clicked to switch the active animation. **Some controls are disabled when this menu is open!**
-P                | Toggle Pose Mode. When pose mode is active, the cog's animation will pause, and the scrollwheel can be used to cycle through the animation's frames.
-B                | Toggle animation blending.
+P                | Toggle Pose Mode. When pose mode is active, the cog's animation will pause, and the scrollwheel can be used to cycle through the animation's frames. Pressing it again disables posing, and the actor/part will hang on the last frame you posed it at.
+B                | Toggle animation smoothing.
 F9               | Take screenshot. This will be stored to the `screenshots` directory by default.
 Control+Z        | Reset to default camera position, positioning it directly in front of the cog.
 Mousewheel       | Can be used with the animations menu or pose mode. See **p** and **a** controls for instructions.
 
-This program uses the default Panda3D camera controls. See the gif below for controlling the camera with your mouse.
+See the gif below for controlling the camera with your mouse.
 
 ![An animated gif of a Toontown Rewritten cog. The camera is being manipulated by the mouse movement, both rotationally 
 and positionally.](assets/camera.gif)
 
-# FAQ
+# USAGE FAQ
+## What cogs are available?
+From top to bottom:
+- Five supervisors, including angry foreman.
+- All sellbots, including the foreman and V.P.
+- All cashbots, including the auditor and C.F.O.
+- All lawbots, including the clerk and C.J.
+- All bossbots, including the president and C.E.O.
+- Misc actors: Goons, The Boiler and the Field Office.
+- Bosses: V.P., C.F.O., C.J., C.E.O.
+
+Sets of cogs can be traversed with the up/down arrow keys. Individual cogs can be traversed with left/right.
+
+Additionally, each standard cog can be swapped with their skelecog using Control+S.
+
+## How do I animate the cog? How do I use "pose mode"?
+Pressing **A** on your keyboard will bring up a scrolling menu of valid animation names to use. Press any to apply it to
+the actor. When an animation is applied to the actor, you can then press **P** to pose them on any frame. Use your
+mousewheel to increase or decrease the frame you're on.
+
+Please note that multi-part actors, such as the cog bosses, will first prompt you to select a part of the model to
+animate/pose.
+
+# TECHNICAL FAQ
 ## I'm not familiar with GitHub. How do I download the code?
 If you don't know how to use git, you can download a zipped version of the code from the main page:
 

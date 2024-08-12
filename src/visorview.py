@@ -58,6 +58,8 @@ class VisorView(ShowBase):
         self.accept("3", lambda: self.switch_actor_set("cashbots"))
         self.accept("4", lambda: self.switch_actor_set("lawbots"))
         self.accept("5", lambda: self.switch_actor_set("bossbots"))
+        self.accept("6", lambda: self.switch_actor_set("bosses"))
+        self.accept("7", lambda: self.switch_actor_set("misc"))
         self.accept("a", self.toggle_animation_scroll)
         self.accept("p", self.toggle_posing)
         self.accept("b", self.actor.toggle_animation_smoothing)
