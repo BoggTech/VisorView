@@ -50,6 +50,7 @@ class VisorView(ShowBase):
         self.accept("arrow_up", lambda: self.cycle(False, True))
         self.accept("arrow_down", lambda: self.cycle(True, True))
         self.accept("s", self.actor.toggle_shadow_visibility)
+        self.accept("control-s", self.actor.toggle_skelecog)
         self.accept("control-b", self.actor.toggle_body_visibility)
         self.accept("control-h", self.actor.toggle_head_visibility)
         self.accept("1", lambda: self.switch_actor_set("supervisors"))

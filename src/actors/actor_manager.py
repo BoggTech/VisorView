@@ -4,6 +4,7 @@ from direct.interval.IntervalGlobal import *
 from direct.interval.ActorInterval import ActorInterval
 from direct.showbase.ShowBase import Loader
 import src.globals.visorview_globals as visorview_globals
+from src.actors.skelecog_actor_data import make_skelecog_data_from_cog_data
 
 
 class ActorManager(NodePath):
@@ -27,12 +28,14 @@ class ActorManager(NodePath):
         # states
         self.__is_posed = {}
         self.__is_animation_smoothed = True
+        self.__is_skelecog = False
 
         # misc info
         self.__pose_frame = {}      # used to keep track of the current frame the actor is posed on
         self.__pose_animation = {}  # used to keep track of the actor's posed animation (get_current_anim dont work)
         self.__looped_animation = {}  # actor intervals = .get_current_anim() isnt always accurate, store ourselves
         self.__from_frame_sequence = None  # stores the sequence used to loop an animation from a certain frame
+        self.__skelecog_parent = None  # stores the original actor data when we swap to a skelecog
 
         # actor
         self.__actor = None
@@ -55,6 +58,9 @@ class ActorManager(NodePath):
             for part in parts:
                 if part in looping_part_anim:
                     looping_part_frame[part] = self.__actor.get_current_frame(looping_part_anim[part], part)
+        else:
+            # clear animations
+            self.__looped_animation = {}
 
         if self.__actor is not None:
             self.__actor.cleanup()
@@ -148,6 +154,25 @@ class ActorManager(NodePath):
         """Toggles shadow visibility."""
         self.set_shadow_visibility(not self.get_shadow_visibility())
 
+    def set_is_skelecog(self, is_skelecog):
+        """Sets whether the actor should display as a skelecog or not."""
+        self.__is_skelecog = is_skelecog
+
+        if self.__is_skelecog and self.__actor_data.get_type() == "cog":
+            self.__skelecog_parent = self.__actor_data
+            self.__actor_data = make_skelecog_data_from_cog_data(self.__skelecog_parent)
+            self.build_actor(True)
+        elif not self.__is_skelecog and self.__actor_data.get_type() == "skelecog":
+            self.__actor_data = self.__skelecog_parent
+            self.__skelecog_parent = None
+            self.build_actor(True)
+
+    def toggle_skelecog(self):
+        self.set_is_skelecog(not self.is_skelecog())
+
+    def is_skelecog(self):
+        return self.__is_skelecog
+
     def set_animation_smoothing(self, is_smooth):
         """Sets animation smoothing based on boolean value is_smooth"""
         self.__is_animation_smoothed = is_smooth
@@ -223,7 +248,11 @@ class ActorManager(NodePath):
         if self.is_posed(part):
             return self.__pose_animation[part] if part in self.__pose_animation else None
         else:
-            return self.__actor.get_current_anim(part)
+            current_animation = self.__actor.get_current_anim(part)
+            if current_animation is None:
+                # this might happen if we're in an actorinterval, so lets check our saved animations:
+                current_animation = self.__looped_animation[part] if part in self.__looped_animation else None
+            return current_animation
 
     def toggle_posed(self, part=None):
         """Toggles pose mode. If no part is specified, it will use the first
@@ -257,6 +286,9 @@ class ActorManager(NodePath):
             return self.__pose_frame[part]
         else:
             current_animation = self.__actor.get_current_anim(part)
+            if current_animation is None:
+                # this might happen if we're in an actorinterval, so lets check our saved animations:
+                current_animation = self.__looped_animation[part] if part in self.__looped_animation else None
             return self.__actor.get_current_frame(current_animation, part)
 
     def get_first_part(self):
@@ -279,6 +311,8 @@ class ActorManager(NodePath):
     def set_actor_data(self, actor_data):
         """Replaces the current actor with a new one, specified by actor_data."""
         self.__actor_data = actor_data
+        # match skelecog data here to avoid it being called more than necessary in build_actor & cause issues
+        self.set_is_skelecog(self.is_skelecog())
         self.build_actor()
 
     def get_actor_parts(self):
