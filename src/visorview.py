@@ -84,7 +84,12 @@ class VisorView(ShowBase):
         now = datetime.now()
         date_string = now.strftime("%d-%m-%Y-%H-%M-%S")
         screenshot_name = os.path.join(path, "ss-{}-{}.png".format(current_cog, date_string))
+
+        # set the background to pure black for a frame and prevent any issues with blending in the screenshot
+        base.win.set_clear_color((0, 0, 0, 0))
+        base.graphics_engine.render_frame()
         base.screenshot(screenshot_name, False)
+        base.win.set_clear_color((.412, .412, .412, 0))
 
     def enable_mouse_cam(self):
         """Enables movement of the camera via the mouse."""
