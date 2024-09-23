@@ -1,9 +1,9 @@
 from src.actors.cog_actor_data import *
 from panda3d.core import Texture
 
-SKELECOG_MODELS = {"a": Filename("phase_5/models/char/tt_a_ene_sca_zero.bam"),
-                   "b": Filename("phase_5/models/char/tt_a_ene_scb_zero.bam"),
-                   "c": Filename("phase_5/models/char/tt_a_ene_scc_zero.bam")}
+SKELECOG_MODELS = {"a": Filename("phase_5/models/char/ttr_r_ene_cga_skelecog.bam"),
+                   "b": Filename("phase_5/models/char/ttr_r_ene_cgb_skelecog.bam"),
+                   "c": Filename("phase_5/models/char/ttr_r_ene_cgc_skelecog.bam")}
 
 TIE_DICT = {"sell": "phase_5/maps/cog_robot_tie_sales.jpg",
             "cash": "phase_5/maps/cog_robot_tie_money.jpg",
@@ -50,7 +50,7 @@ class SkelecogActorData(CogActorData):
         cog = Actor(SKELECOG_MODELS[suit_type], SUIT_ANIMATION_DICTS[suit_type])
 
         # Load and attach insignia
-        chest_null = cog.find("**/def_joint_attachMeter")
+        chest_null = cog.find("**/jnt_M_attachMeter_01")
         icons = loader.load_model(COG_ICONS)
         medallion = icons.find('**/' + MEDALLION_NAME_DICT[department]).copy_to(chest_null)
         medallion.set_pos_hpr_scale(*COG_ICON_POS_HPR_SCALE)

@@ -3,7 +3,7 @@ model-path $MAIN_DIR
 model-path $THIS_PRC_DIR/resources
 
 // uncomment to disable model caching
-//model-cache-dir
+model-cache-dir
 
 // anti-aliasing
 framebuffer-multisample 1

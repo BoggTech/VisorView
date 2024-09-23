@@ -5,13 +5,13 @@ from panda3d.core import Filename, Vec4, VBase4
 from direct.actor.Actor import Actor
 from src.actors.actor_data import ActorData
 
-SUIT_MODELS = {"a": Filename("phase_3.5/models/char/tt_a_ene_cga_zero.bam"),
-               "b": Filename("phase_3.5/models/char/tt_a_ene_cgb_zero.bam"),
-               "c": Filename("phase_3.5/models/char/tt_a_ene_cgc_zero.bam")}
+SUIT_MODELS = {"a": Filename("phase_3.5/models/char/ttr_r_ene_cga_suit.bam"),
+               "b": Filename("phase_3.5/models/char/ttr_r_ene_cgb_suit.bam"),
+               "c": Filename("phase_3.5/models/char/ttr_r_ene_cgc_suit.bam")}
 
-SUIT_HEAD_DICT = {"a": Filename("phase_4/models/char/suitA-"),
-                  "b": Filename("phase_4/models/char/suitB-"),
-                  "c": Filename("phase_3.5/models/char/suitC-"),
+SUIT_HEAD_DICT = {"a": Filename("phase_4/models/char/ttr_r_ene_cga_"),
+                  "b": Filename("phase_4/models/char/ttr_r_ene_cgb_"),
+                  "c": Filename("phase_3.5/models/char/ttr_r_ene_cgc_"),
                   }
 
 DEPARTMENTS = ("sell", "cash", "law", "boss")
@@ -34,21 +34,21 @@ MEDALLION_COLORS = {
     'cash': Vec4(0.749, 0.769, 0.749, 1.000),
 }
 
-SUIT_ANIMATION_PATHS = {"a": glob.glob(posixpath.join("phase_*", "models", "char", "tt_a_ene_cga_*.bam")),
-                        "b": glob.glob(posixpath.join("phase_*", "models", "char", "tt_a_ene_cgb_*.bam")),
-                        "c": glob.glob(posixpath.join("phase_*", "models", "char", "tt_a_ene_cgc_*.bam"))}
+SUIT_ANIMATION_PATHS = {"a": glob.glob(posixpath.join("phase_*", "models", "char", "ttr_a_ene_cga_*.bam")),
+                        "b": glob.glob(posixpath.join("phase_*", "models", "char", "ttr_a_ene_cgb_*.bam")),
+                        "c": glob.glob(posixpath.join("phase_*", "models", "char", "ttr_a_ene_cgc_*.bam"))}
 
 SUIT_ANIMATION_DICTS = {"a": {}, "b": {}, "c": {}}
 
 # split em up into dictionaries for the actor
 for i in range(0, len(SUIT_ANIMATION_PATHS["a"])):
-    SUIT_ANIMATION_DICTS["a"][os.path.basename(SUIT_ANIMATION_PATHS["a"][i])[13:-4]] = SUIT_ANIMATION_PATHS["a"][i]
+    SUIT_ANIMATION_DICTS["a"][os.path.basename(SUIT_ANIMATION_PATHS["a"][i])[14:-4]] = SUIT_ANIMATION_PATHS["a"][i]
 
 for i in range(0, len(SUIT_ANIMATION_PATHS["b"])):
-    SUIT_ANIMATION_DICTS["b"][os.path.basename(SUIT_ANIMATION_PATHS["b"][i])[13:-4]] = SUIT_ANIMATION_PATHS["b"][i]
+    SUIT_ANIMATION_DICTS["b"][os.path.basename(SUIT_ANIMATION_PATHS["b"][i])[14:-4]] = SUIT_ANIMATION_PATHS["b"][i]
 
 for i in range(0, len(SUIT_ANIMATION_PATHS["c"])):
-    SUIT_ANIMATION_DICTS["c"][os.path.basename(SUIT_ANIMATION_PATHS["c"][i])[13:-4]] = SUIT_ANIMATION_PATHS["c"][i]
+    SUIT_ANIMATION_DICTS["c"][os.path.basename(SUIT_ANIMATION_PATHS["c"][i])[14:-4]] = SUIT_ANIMATION_PATHS["c"][i]
 
 SUIT_ANIMATIONS = {"a": list(SUIT_ANIMATION_DICTS["a"]),
                    "b": list(SUIT_ANIMATION_DICTS["b"]),
@@ -59,8 +59,8 @@ SUIT_ANIMATIONS = {"a": list(SUIT_ANIMATION_DICTS["a"]),
 class CogActorData(ActorData):
     """Class that stores data for and generates Toontown Rewritten cog actors."""
     _actor_type = "cog"
-    _special_nodes = {"shadow": "**/def_shadow",
-                      "head": '**/def_head'}
+    _special_nodes = {"shadow": "**/jnt_M_shadow_01",
+                      "head": '**/def_M_head_01'}
 
     def __init__(self, name, department, suit_type, scale, hand_color=None, head_path=None, head_nodes=None,
                  head_color=None, head_texture=None, is_supervisor=False):
@@ -164,7 +164,7 @@ class CogActorData(ActorData):
         head_color = self.get_data("head_color")
         head_texture = self.get_data("head_texture")
         head_model = loader.load_model(head_path)
-        head_null = cog.find('**/def_head')
+        head_null = cog.find('**/def_M_head_01')
         [head_model.find(head_node).copy_to(head_null) for head_node in head_nodes]
         head_model.remove_node()
         if head_color is not None:
@@ -174,7 +174,7 @@ class CogActorData(ActorData):
             head_null.set_texture(head_tx, 1)
 
         # Load and attach insignia
-        chest_null = cog.find("**/def_joint_attachMeter")
+        chest_null = cog.find("**/jnt_M_attachMeter_01")
         icons = loader.load_model(COG_ICONS)
         medallion = icons.find('**/' + MEDALLION_NAME_DICT[department]).copy_to(chest_null)
         medallion.set_pos_hpr_scale(*COG_ICON_POS_HPR_SCALE)
