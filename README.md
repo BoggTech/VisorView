@@ -4,16 +4,13 @@ on Toontown Rewritten cogs.
 
 # Usage
 ## Prerequisites
-Please ensure you have [Python 3](https://www.python.org/downloads/) installed before continuing. As well as this, please ensure you have Panda3D 
-installed as a python module by running `py -m pip install Panda3D` (replace py if you know you use a different alias, 
-i.e. python3, python). 
-
-This command should be run in your **terminal**, if you use Linux, or your **command prompt** if you use Windows. The 
-command prompt can be accessed by accessing the run dialog (Ctrl + R) and typing `cmd.exe`.
+Download the latest Panda3D SDK [here](https://www.panda3d.org/download/). This is the engine that VisorView, and Toontown Rewritten, relies on to run.
 
 ## Running
 You can run the program by double-clicking the provided .bat file in the `scripts` directory (on windows) or by running 
-`py main.py`, from the main directory, in your terminal/command prompt. You should be greeted with a graphics window 
+`ppython main.py`, from the main directory, in your terminal/command prompt. Assuming the Panda3D SDK installed correctly, it should run without issue. 
+
+You should be greeted with a graphics window 
 displaying a t-posing cog. If you have a custom Toontown Rewritten install location, you will instead be prompted to
 locate your game files manually.
 
